@@ -13,21 +13,6 @@ class Order extends Model
         return $this->belongsTo(Pelanggan::class);
     }
 
-    public function detailPesanan()
-    {
-        return $this->hasMany(DetailPesanan::class);
-    }
-
-    public function pembayaran()
-    {
-        return $this->hasOne(Pembayaran::class);
-    }
-
-    public function statusHistories()
-    {
-        return $this->hasMany(OrderStatusHistory::class);
-    }
-
     public function package()
     {
         return $this->belongsTo(Package::class);

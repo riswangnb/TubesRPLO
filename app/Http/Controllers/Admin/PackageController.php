@@ -8,9 +8,20 @@ use Illuminate\Http\Request;
 
 class PackageController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $packages = Package::latest()->paginate(10);
+        $query = Package::query();
+
+        // Search berdasarkan nama atau deskripsi
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $packages = $query->latest()->paginate(10)->withQueryString();
         return view('admin.packages.index', compact('packages'));
     }
 

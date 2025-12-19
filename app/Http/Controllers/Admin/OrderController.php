@@ -10,10 +10,44 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::with(['pelanggan', 'package'])->latest()->paginate(10);
-        return view('admin.orders.index', compact('orders'));
+        $query = Order::with(['pelanggan', 'package']);
+
+        // Search berdasarkan invoice atau nama pelanggan
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('invoice_number', 'like', "%{$search}%")
+                  ->orWhereHas('pelanggan', function($q) use ($search) {
+                      $q->where('nama', 'like', "%{$search}%")
+                        ->orWhere('telepon', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Filter berdasarkan status
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Filter berdasarkan tanggal
+        if ($request->filled('tanggal_dari')) {
+            $query->whereDate('tanggal_order', '>=', $request->tanggal_dari);
+        }
+        if ($request->filled('tanggal_sampai')) {
+            $query->whereDate('tanggal_order', '<=', $request->tanggal_sampai);
+        }
+
+        // Filter berdasarkan package
+        if ($request->filled('package_id')) {
+            $query->where('package_id', $request->package_id);
+        }
+
+        $orders = $query->latest()->paginate(10)->withQueryString();
+        $packages = Package::all();
+        
+        return view('admin.orders.index', compact('orders', 'packages'));
     }
 
     public function create()

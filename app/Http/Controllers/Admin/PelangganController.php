@@ -8,9 +8,21 @@ use Illuminate\Http\Request;
 
 class PelangganController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pelanggans = Pelanggan::latest()->paginate(10);
+        $query = Pelanggan::query();
+
+        // Search berdasarkan nama, telepon, atau email
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('telepon', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $pelanggans = $query->latest()->paginate(10)->withQueryString();
         return view('admin.pelanggans.index', compact('pelanggans'));
     }
 

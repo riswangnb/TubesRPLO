@@ -65,7 +65,7 @@
         <table class="w-full">
             <thead class="bg-gray-50 border-b">
                 <tr>
-                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">ID</th>
+                    <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Invoice</th>
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Pelanggan</th>
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Package</th>
                     <th class="px-6 py-3 text-left text-sm font-semibold text-gray-700">Total Harga</th>
@@ -76,7 +76,7 @@
             <tbody>
                 @foreach($recentOrders as $order)
                 <tr class="border-b hover:bg-gray-50">
-                    <td class="px-6 py-3 text-sm text-gray-600">#{{ $order->id }}</td>
+                    <td class="px-6 py-3 text-sm text-gray-600 font-medium">{{ $order->invoice_number ?? '-' }}</td>
                     <td class="px-6 py-3 text-sm text-gray-600">{{ $order->pelanggan->nama }}</td>
                     <td class="px-6 py-3 text-sm text-gray-600">{{ $order->package->nama ?? '-' }}</td>
                     <td class="px-6 py-3 text-sm text-gray-600 font-semibold">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>

@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\Pelanggan;
 use App\Models\Package;
 use Illuminate\Http\Request;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -78,6 +80,12 @@ class OrderController extends Controller
         return redirect()->route('admin.orders.index')->with('success', 'Order berhasil dibuat');
     }
 
+    public function show(Order $order)
+    {
+        $order->load(['pelanggan', 'package']);
+        return view('admin.orders.show', compact('order'));
+    }
+
     public function edit(Order $order)
     {
         $pelanggans = Pelanggan::all();
@@ -116,5 +124,31 @@ class OrderController extends Controller
     {
         $order->load(['pelanggan', 'package']);
         return view('admin.orders.invoice', compact('order'));
+    }
+
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,proses,selesai,diambil'
+        ]);
+
+        $order->update(['status' => $validated['status']]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diupdate',
+                'status' => $order->status
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diupdate');
+    }
+
+    public function export(Request $request)
+    {
+        $filters = $request->only(['search', 'status', 'tanggal_dari', 'tanggal_sampai', 'package_id']);
+        $filename = 'orders_' . date('Y-m-d_His') . '.xlsx';
+        return Excel::download(new OrdersExport($filters), $filename);
     }
 }

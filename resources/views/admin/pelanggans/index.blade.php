@@ -6,10 +6,16 @@
 @section('content')
 <div class="mb-6 flex justify-between items-center">
     <h3 class="text-xl font-bold text-gray-800">Daftar Pelanggans</h3>
-    <a href="{{ route('admin.pelanggans.create') }}" class="text-white px-4 py-2 rounded-lg flex items-center space-x-2" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#3FA9B5'" onmouseout="this.style.backgroundColor='#56C5D0'">
-        <i class="fas fa-plus"></i>
-        <span>Tambah Pelanggan</span>
-    </a>
+    <div class="flex gap-3">
+        <a href="{{ route('admin.pelanggans.export') }}" class="text-white px-4 py-2 rounded-lg flex items-center space-x-2" style="background-color: #10b981;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">
+            <i class="fas fa-file-excel"></i>
+            <span>Export Excel</span>
+        </a>
+        <a href="{{ route('admin.pelanggans.create') }}" class="text-white px-4 py-2 rounded-lg flex items-center space-x-2" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#3FA9B5'" onmouseout="this.style.backgroundColor='#56C5D0'">
+            <i class="fas fa-plus"></i>
+            <span>Tambah Pelanggan</span>
+        </a>
+    </div>
 </div>
 
 <!-- Search Section -->

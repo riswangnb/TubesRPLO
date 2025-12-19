@@ -37,9 +37,16 @@
                 </button>
             </div>
 
+            <!-- Export Excel Button -->
+            <div>
+                <a href="{{ route('admin.laporan.export', request()->query()) }}" class="text-white px-6 py-2 rounded-lg font-semibold inline-block" style="background-color: #10b981;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">
+                    <i class="fas fa-file-excel mr-2"></i>Export Excel
+                </a>
+            </div>
+
             <!-- Print Button -->
             <div>
-                <a href="{{ route('admin.laporan.print', request()->query()) }}" target="_blank" class="text-white px-6 py-2 rounded-lg font-semibold inline-block" style="background-color: #10b981;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">
+                <a href="{{ route('admin.laporan.print', request()->query()) }}" target="_blank" class="text-white px-6 py-2 rounded-lg font-semibold inline-block" style="background-color: #3b82f6;" onmouseover="this.style.backgroundColor='#2563eb'" onmouseout="this.style.backgroundColor='#3b82f6'">
                     <i class="fas fa-print mr-2"></i>Cetak Laporan
                 </a>
             </div>

@@ -77,4 +77,10 @@ class OrderController extends Controller
         $order->delete();
         return redirect()->route('admin.orders.index')->with('success', 'Order berhasil dihapus');
     }
+
+    public function invoice(Order $order)
+    {
+        $order->load(['pelanggan', 'package']);
+        return view('admin.orders.invoice', compact('order'));
+    }
 }

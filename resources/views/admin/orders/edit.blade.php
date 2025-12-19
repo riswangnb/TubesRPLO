@@ -38,7 +38,7 @@
             <div class="grid grid-cols-2 gap-4 mb-4">
                 <div>
                     <label for="tanggal_order" class="block text-sm font-semibold text-gray-700 mb-2">Tanggal Order</label>
-                    <input type="date" name="tanggal_order" id="tanggal_order" class="w-full px-3 py-2 border rounded-lg focus:outline-none" style="border-color: {{ $errors->has('tanggal_order') ? '#ef4444' : '#d1d5db' }}; outline: 2px solid {{ $errors->has('tanggal_order') ? '#fca5a5' : '#56C5D0' }}; outline-offset: -1px;" value="{{ old('tanggal_order', $order->tanggal_order->format('Y-m-d')) }}">
+                    <input type="date" name="tanggal_order" id="tanggal_order" class="w-full px-3 py-2 border rounded-lg focus:outline-none" style="border-color: {{ $errors->has('tanggal_order') ? '#ef4444' : '#d1d5db' }}; outline: 2px solid {{ $errors->has('tanggal_order') ? '#fca5a5' : '#56C5D0' }}; outline-offset: -1px;" value="{{ old('tanggal_order', is_string($order->tanggal_order) ? $order->tanggal_order : $order->tanggal_order->format('Y-m-d')) }}">
                     @error('tanggal_order') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                 </div>
 

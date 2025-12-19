@@ -44,8 +44,11 @@
                         {{ ucfirst($order->status) }}
                     </span>
                 </td>
-                <td class="px-6 py-3 text-sm text-gray-600">{{ $order->tanggal_order->format('d/m/Y') }}</td>
+                <td class="px-6 py-3 text-sm text-gray-600">{{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d/m/Y') : $order->tanggal_order->format('d/m/Y') }}</td>
                 <td class="px-6 py-3 text-sm space-x-2">
+                    <a href="{{ route('admin.orders.invoice', $order) }}" class="text-white px-2 py-1 rounded-lg text-sm inline-block" style="background-color: #10b981;" title="Cetak Invoice">
+                        <i class="fas fa-file-invoice"></i>
+                    </a>
                     <a href="{{ route('admin.orders.edit', $order) }}" class="text-white px-2 py-1 rounded-lg text-sm inline-block" style="background-color: #56C5D0;">
                         <i class="fas fa-edit"></i>
                     </a>

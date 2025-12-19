@@ -90,7 +90,7 @@
                             {{ ucfirst($order->status) }}
                         </span>
                     </td>
-                    <td class="px-6 py-3 text-sm text-gray-600">{{ $order->tanggal_order->format('d/m/Y') }}</td>
+                    <td class="px-6 py-3 text-sm text-gray-600">{{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d/m/Y') : $order->tanggal_order->format('d/m/Y') }}</td>
                 </tr>
                 @endforeach
             </tbody>

@@ -43,6 +43,11 @@
                     <i class="fas fa-box w-5"></i>
                     <span>Packages</span>
                 </a>
+
+                <a href="{{ route('admin.laporan.index') }}" class="flex items-center space-x-3 px-4 py-3 rounded-lg {{ request()->routeIs('admin.laporan.*') ? 'bg-opacity-100' : 'hover:bg-opacity-50 transition' }}" style="background-color: {{ request()->routeIs('admin.laporan.*') ? '#3FA9B5' : 'transparent' }};">
+                    <i class="fas fa-chart-bar w-5"></i>
+                    <span>Laporan</span>
+                </a>
             </nav>
 
             {{-- <div class="absolute bottom-0 left-0 right-0 p-4 border-t" style="border-color: #3FA9B5; background-color: #3FA9B5;">
@@ -92,5 +97,6 @@
             </main>
         </div>
     </div>
+    @stack('scripts')
 </body>
 </html>

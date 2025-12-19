@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice #{{ $order->invoice_number }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .invoice-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            border-bottom: 3px solid #56C5D0;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .company-info {
+            flex: 1;
+        }
+        .company-name {
+            font-size: 28px;
+            font-weight: bold;
+            color: #56C5D0;
+            margin-bottom: 5px;
+        }
+        .company-details {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+        .invoice-title {
+            text-align: right;
+            flex: 1;
+        }
+        .invoice-title h1 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        .invoice-number {
+            font-size: 14px;
+            color: #666;
+        }
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .info-box {
+            flex: 1;
+        }
+        .info-box h3 {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .info-box p {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+        .info-box .highlight {
+            font-weight: bold;
+            color: #56C5D0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        thead {
+            background-color: #56C5D0;
+            color: white;
+        }
+        thead th {
+            padding: 12px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+            color: #333;
+        }
+        .text-right {
+            text-align: right;
+        }
+        .totals {
+            margin-left: auto;
+            width: 300px;
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+        .total-row.grand-total {
+            border-top: 2px solid #56C5D0;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #56C5D0;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .status-pending {
+            background-color: #fef3c7;
+            color: #b45309;
+        }
+        .status-proses {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .status-selesai {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+        .status-diambil {
+            background-color: #f3f4f6;
+            color: #1f2937;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+        }
+        .notes {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-left: 3px solid #56C5D0;
+        }
+        .notes h4 {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .notes p {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+            .invoice-container {
+                box-shadow: none;
+                padding: 20px;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+        .print-button {
+            background-color: #56C5D0;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .print-button:hover {
+            background-color: #45a3ad;
+        }
+        .back-button {
+            background-color: #6b7280;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .back-button:hover {
+            background-color: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print" style="max-width: 800px; margin: 0 auto 20px;">
+        <button onclick="window.print()" class="print-button">🖨️ Cetak Invoice</button>
+        <a href="{{ route('admin.orders.index') }}" class="back-button">← Kembali</a>
+    </div>
+
+    <div class="invoice-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-info">
+                <div class="company-name">FreshClean Laundry</div>
+                <div class="company-details">
+                    Jl. Bersih No. 123, Jakarta Selatan<br>
+                    Telp: 0812-3456-7890<br>
+                    Email: info@freshclean.com
+                </div>
+            </div>
+            <div class="invoice-title">
+                <h1>INVOICE</h1>
+                <div class="invoice-number">{{ $order->invoice_number }}</div>
+            </div>
+        </div>
+
+        <!-- Info Section -->
+        <div class="info-section">
+            <div class="info-box">
+                <h3>Kepada:</h3>
+                <p>
+                    <strong>{{ $order->pelanggan->nama }}</strong><br>
+                    {{ $order->pelanggan->alamat }}<br>
+                    Telp: {{ $order->pelanggan->telepon }}<br>
+                    @if($order->pelanggan->email)
+                        Email: {{ $order->pelanggan->email }}
+                    @endif
+                </p>
+            </div>
+            <div class="info-box" style="text-align: right;">
+                <h3>Detail Invoice:</h3>
+                <p>
+                    <strong>Tanggal Invoice:</strong><br>
+                    {{ \Carbon\Carbon::parse($order->invoice_date)->format('d F Y') }}<br><br>
+                    <strong>Tanggal Order:</strong><br>
+                    {{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d F Y') : $order->tanggal_order->format('d F Y') }}<br><br>
+                    <strong>Status:</strong><br>
+                    <span class="status-badge status-{{ $order->status }}">{{ ucfirst($order->status) }}</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Items Table -->
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 50%;">Layanan</th>
+                    <th style="width: 15%;">Berat</th>
+                    <th style="width: 20%;">Harga/kg</th>
+                    <th style="width: 15%;" class="text-right">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <strong>{{ $order->package->nama ?? 'Custom' }}</strong>
+                        @if($order->package)
+                            <br><small style="color: #999;">{{ $order->package->deskripsi }}</small>
+                        @endif
+                    </td>
+                    <td>{{ $order->berat ? number_format($order->berat, 1) . ' kg' : '-' }}</td>
+                    <td>Rp {{ number_format($order->package->harga ?? 0, 0, ',', '.') }}</td>
+                    <td class="text-right">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Totals -->
+        <div class="totals">
+            <div class="total-row">
+                <span>Subtotal:</span>
+                <span>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>TOTAL:</span>
+                <span>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+            </div>
+        </div>
+
+        <!-- Notes -->
+        @if($order->catatan)
+        <div class="notes">
+            <h4>Catatan:</h4>
+            <p>{{ $order->catatan }}</p>
+        </div>
+        @endif
+
+        <!-- Additional Info -->
+        @if($order->package)
+        <div class="notes" style="margin-top: 15px; background-color: #f0f9ff; border-left-color: #3b82f6;">
+            <h4>Informasi Layanan:</h4>
+            <p>
+                Estimasi waktu pengerjaan: <strong>{{ $order->package->durasi_hari }} hari</strong><br>
+                Tanggal estimasi selesai: <strong>{{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->addDays($order->package->durasi_hari)->format('d F Y') : $order->tanggal_order->addDays($order->package->durasi_hari)->format('d F Y') }}</strong>
+            </p>
+        </div>
+        @endif
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Terima kasih atas kepercayaan Anda menggunakan layanan FreshClean Laundry</p>
+            <p style="margin-top: 5px;">Invoice ini dicetak secara digital dan sah tanpa tanda tangan</p>
+        </div>
+    </div>
+</body>
+</html>

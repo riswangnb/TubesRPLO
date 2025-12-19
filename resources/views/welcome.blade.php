@@ -92,47 +92,36 @@
                 <p class="text-gray-700 text-lg">Pilih layanan yang sesuai dengan kebutuhan Anda</p>
             </div>
             <div class="grid md:grid-cols-3 gap-8">
-                <!-- Service 1 -->
-                <div class="service-card bg-white rounded-xl shadow-lg p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background-color: #AEE4FF;">
-                        <svg class="w-10 h-10" style="color: #56C5D0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
-                        </svg>
+                @foreach($packages as $index => $package)
+                    <!-- Service {{ $index + 1 }} -->
+                    <div class="service-card bg-white rounded-xl shadow-lg p-8 text-center {{ $index === 1 ? 'border-4 relative' : '' }}" style="{{ $index === 1 ? 'border-color: #56C5D0;' : '' }}">
+                        @if($index === 1)
+                            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-white px-4 py-1 rounded-full text-sm" style="background-color: #56C5D0;">
+                                Paling Populer
+                            </div>
+                        @endif
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background-color: {{ $index === 1 ? '#56C5D0' : '#AEE4FF' }};">
+                            @if($index === 1)
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            @elseif(stripos($package->nama, 'setrika') !== false && stripos($package->nama, 'cuci') === false)
+                                <svg class="w-10 h-10" style="color: #56C5D0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
+                                </svg>
+                            @else
+                                <svg class="w-10 h-10" style="color: #56C5D0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                                </svg>
+                            @endif
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4" style="color: #56C5D0;">{{ $package->nama }}</h3>
+                        <p class="text-gray-600 mb-6 h-16">{{ Str::limit($package->deskripsi, 80) }}</p>
+                        <p class="text-3xl font-bold mb-2" style="color: #56C5D0;">Rp {{ number_format($package->harga, 0, ',', '.') }}<span class="text-lg">/kg</span></p>
+                        <p class="text-sm text-gray-500 mb-4">Estimasi: {{ $package->durasi_hari }} hari</p>
+                        <button class="text-white px-6 py-3 rounded-full transition" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#45a3ad'" onmouseout="this.style.backgroundColor='#56C5D0'">Pesan Sekarang</button>
                     </div>
-                    <h3 class="text-2xl font-bold mb-4" style="color: #56C5D0;">Cuci Kering</h3>
-                    <p class="text-gray-600 mb-6">Pakaian dicuci bersih dan dikeringkan dengan mesin pengering modern</p>
-                    <p class="text-3xl font-bold mb-4" style="color: #56C5D0;">Rp 6.000<span class="text-lg">/kg</span></p>
-                    <button class="text-white px-6 py-3 rounded-full transition" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#45a3ad'" onmouseout="this.style.backgroundColor='#56C5D0'">Pesan Sekarang</button>
-                </div>
-
-                <!-- Service 2 -->
-                <div class="service-card bg-white rounded-xl shadow-lg p-8 text-center border-4 relative" style="border-color: #56C5D0;">
-                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 text-white px-4 py-1 rounded-full text-sm" style="background-color: #56C5D0;">
-                        Paling Populer
-                    </div>
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background-color: #56C5D0;">
-                        <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4" style="color: #56C5D0;">Cuci Setrika</h3>
-                    <p class="text-gray-600 mb-6">Pakaian dicuci, dikeringkan, dan disetrika rapi siap pakai</p>
-                    <p class="text-3xl font-bold mb-4" style="color: #56C5D0;">Rp 8.000<span class="text-lg">/kg</span></p>
-                    <button class="text-white px-6 py-3 rounded-full transition" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#45a3ad'" onmouseout="this.style.backgroundColor='#56C5D0'">Pesan Sekarang</button>
-                </div>
-
-                <!-- Service 3 -->
-                <div class="service-card bg-white rounded-xl shadow-lg p-8 text-center">
-                    <div class="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6" style="background-color: #AEE4FF;">
-                        <svg class="w-10 h-10" style="color: #56C5D0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold mb-4" style="color: #56C5D0;">Setrika Saja</h3>
-                    <p class="text-gray-600 mb-6">Khusus layanan setrika untuk pakaian yang sudah bersih</p>
-                    <p class="text-3xl font-bold mb-4" style="color: #56C5D0;">Rp 4.000<span class="text-lg">/kg</span></p>
-                    <button class="text-white px-6 py-3 rounded-full transition" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#45a3ad'" onmouseout="this.style.backgroundColor='#56C5D0'">Pesan Sekarang</button>
-                </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -187,7 +176,7 @@
         <div class="container mx-auto px-6">
             <h2 class="text-4xl font-bold text-center text-gray-800 mb-16">Galeri Kami</h2>
             <div class="grid md:grid-cols-3 gap-6">
-                <div class="rounded-xl overflow-hidden shadow-lg bg-gradient-to-br h-64 flex items-center justify-center" style="background: linear-gradient(135deg, #00ADB5 0%, #393E46 100%);">
+                <div class="rounded-xl overflow-hidden shadow-lg h-64 flex items-center justify-center" style="background: linear-gradient(135deg, #00ADB5 0%, #393E46 100%);">
                     <svg class="w-32 h-32 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                     </svg>

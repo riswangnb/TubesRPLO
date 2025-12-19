@@ -21,4 +21,5 @@ Route::prefix('admin')->group(function () {
     Route::resource('packages', PackageController::class, ['names' => 'admin.packages']);
     Route::resource('pelanggans', PelangganController::class, ['names' => 'admin.pelanggans']);
     Route::get('laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+    Route::get('laporan/print', [LaporanController::class, 'print'])->name('admin.laporan.print');
 });

@@ -36,6 +36,13 @@
                     <i class="fas fa-search mr-2"></i>Tampilkan
                 </button>
             </div>
+
+            <!-- Print Button -->
+            <div>
+                <a href="{{ route('admin.laporan.print', request()->query()) }}" target="_blank" class="text-white px-6 py-2 rounded-lg font-semibold inline-block" style="background-color: #10b981;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">
+                    <i class="fas fa-print mr-2"></i>Cetak Laporan
+                </a>
+            </div>
         </div>
     </form>
 </div>

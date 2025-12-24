@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Jobs\SendWhatsAppJob;
 
 class Order extends Model
 {
@@ -24,8 +27,46 @@ class Order extends Model
                 $order->invoice_date = Carbon::now()->format('Y-m-d');
             }
         });
+
+        static::updated(function ($order) {
+            // Cek apakah kolom status berubah dan baru menjadi 'selesai'
+            if ($order->isDirty('status') && $order->status === 'selesai' && $order->getOriginal('status') !== 'selesai') {
+                // Dispatch a queued job to send WhatsApp (more reliable, allows retries)
+                SendWhatsAppJob::dispatch($order->id);
+            }
+        });
+
     }
 
+    protected static function formatPhoneForFonnte($raw)
+    {
+        // Hapus semua karakter bukan digit
+        $digits = preg_replace('/[^0-9]/', '', $raw);
+
+        $defaultCc = config('fonnte.default_country_code', env('FONNTE_DEFAULT_COUNTRY_CODE', '62'));
+
+        // Jika dimulai dengan 0 -> target tanpa 0, kirim countryCode terpisah
+        if (strlen($digits) > 0 && $digits[0] === '0') {
+            return [
+                'target' => substr($digits, 1),
+                'countryCode' => $defaultCc,
+            ];
+        }
+
+        // Jika dimulai dengan country code (mis. 62...), keluarkan country code dan sisanya sebagai target
+        if (strpos($digits, $defaultCc) === 0) {
+            return [
+                'target' => substr($digits, strlen($defaultCc)),
+                'countryCode' => $defaultCc,
+            ];
+        }
+
+        // Fallback: kirim seluruh digits sebagai target dan default country code
+        return [
+            'target' => $digits,
+            'countryCode' => $defaultCc,
+        ];
+    }
     public static function generateInvoiceNumber()
     {
         $date = Carbon::now();

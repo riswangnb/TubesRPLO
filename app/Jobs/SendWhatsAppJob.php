@@ -18,11 +18,16 @@ class SendWhatsAppJob implements ShouldQueue
 
     public $orderId;
 
+    public $attachmentUrl;
+    public $templateKey;
+
     public $tries = 3;
 
-    public function __construct($orderId)
+    public function __construct($orderId, $attachmentUrl = null, $templateKey = null)
     {
         $this->orderId = $orderId;
+        $this->attachmentUrl = $attachmentUrl;
+        $this->templateKey = $templateKey;
     }
 
     public function handle()
@@ -36,7 +41,16 @@ class SendWhatsAppJob implements ShouldQueue
         $parts = Order::formatPhoneForFonnte($pel->telepon);
 
         // Build message from template with placeholders
-        $template = config('fonnte.message_template');
+        // Choose template by key if provided, fallback to message_template
+        $template = null;
+        if (!empty($this->templateKey)) {
+            $template = config('fonnte.message_templates.' . $this->templateKey);
+        }
+        if (empty($template)) {
+            $template = config('fonnte.message_template');
+        }
+
+        Log::debug('SendWhatsAppJob template selected', ['order_id' => $order->id, 'templateKey' => $this->templateKey, 'template' => $template]);
         $replacements = [
             '{name}' => $pel->nama ?? '',
             '{invoice}' => $order->invoice_number ?? '',
@@ -46,6 +60,15 @@ class SendWhatsAppJob implements ShouldQueue
         ];
 
         $message = strtr($template, $replacements);
+
+        // If template supports {link} placeholder, use it; otherwise append link
+        if (!empty($this->attachmentUrl)) {
+            if (strpos($message, '{link}') !== false) {
+                $message = str_replace('{link}', $this->attachmentUrl, $message);
+            } else {
+                $message .= "\n\nLihat resi: " . $this->attachmentUrl;
+            }
+        }
 
         $record = WhatsAppMessage::create([
             'order_id' => $order->id,

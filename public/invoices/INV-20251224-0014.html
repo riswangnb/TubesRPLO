@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice #{{ $order->invoice_number }}</title>
-    <!-- Font Awesome for timeline icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Invoice #INV-20251224-0014</title>
     <style>
         * {
             margin: 0;
@@ -216,93 +214,12 @@
         .back-button:hover {
             background-color: #4b5563;
         }
-            /* Responsive tweaks */
-            @media (max-width: 900px) {
-                body { padding: 12px; }
-                .invoice-container { padding: 24px; }
-                .header { flex-direction: column; align-items: flex-start; }
-                .invoice-title { text-align: left; margin-top: 12px; }
-                .info-section { flex-direction: column; gap: 12px; }
-                .totals { width: 100%; margin-top: 12px; }
-                thead th, tbody td { padding: 8px; font-size: 13px; }
-                .horizontal-timeline { padding: 6px 0; }
-                .horizontal-timeline:before { left: 20px; right: 20px; }
-                .timeline-step .icon { width: 40px; height: 40px; }
-            }
-            @media (max-width: 480px) {
-                .invoice-container { padding: 16px; }
-                .company-name { font-size: 20px; }
-                .invoice-title h1 { font-size: 28px; }
-                .horizontal-timeline { flex-wrap: nowrap; overflow-x: auto; }
-                .timeline-step { flex: 0 0 140px; }
-                .horizontal-timeline:before { left: 12px; right: 12px; }
-            }
-        /* Horizontal timeline styles */
-        .horizontal-timeline {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: relative;
-            margin: 20px 0 30px 0;
-            padding: 10px 0;
-        }
-        .horizontal-timeline:before {
-            content: '';
-            position: absolute;
-            /* set left/right to half the icon width so the line runs through icon centers */
-            left: 24px;
-            right: 24px;
-            height: 4px;
-            background: #e6eef0;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 1;
-            border-radius: 2px;
-        }
-        .timeline-step {
-            position: relative;
-            z-index: 2;
-            text-align: center;
-            flex: 1 1 0;
-        }
-        .timeline-step .icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: #f3f4f6;
-            color: #9ca3af;
-            font-size: 18px;
-            border: 4px solid white;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-        }
-        .timeline-step.active .icon {
-            background: #56C5D0;
-            color: white;
-        }
-        .timeline-step .label {
-            margin-top: 8px;
-            font-size: 13px;
-            color: #374151;
-            font-weight: 600;
-        }
-        .timeline-step .sub {
-            display: block;
-            font-size: 12px;
-            color: #6b7280;
-            margin-top: 4px;
-            font-weight: 400;
-        }
     </style>
 </head>
 <body>
     <div class="no-print" style="max-width: 800px; margin: 0 auto 20px;">
         <button onclick="window.print()" class="print-button">🖨️ Cetak Invoice</button>
-        @if(empty($is_public) || !$is_public)
-            <a href="{{ route('admin.orders.index') }}" class="back-button">← Kembali</a>
-        @endif
+        <a href="http://127.0.0.1:8000/admin/orders" class="back-button">← Kembali</a>
     </div>
 
     <div class="invoice-container">
@@ -318,7 +235,7 @@
             </div>
             <div class="invoice-title">
                 <h1>INVOICE</h1>
-                <div class="invoice-number">{{ $order->invoice_number }}</div>
+                <div class="invoice-number">INV-20251224-0014</div>
             </div>
         </div>
 
@@ -327,46 +244,23 @@
             <div class="info-box">
                 <h3>Kepada:</h3>
                 <p>
-                    <strong>{{ $order->pelanggan->nama }}</strong><br>
-                    {{ $order->pelanggan->alamat }}<br>
-                    Telp: {{ $order->pelanggan->telepon }}<br>
-                    @if($order->pelanggan->email)
-                        Email: {{ $order->pelanggan->email }}
-                    @endif
-                </p>
+                    <strong>Raihan</strong><br>
+                    jalan printis<br>
+                    Telp: 082297233332<br>
+                                            Email: raihanBd@gmail.com
+                                    </p>
             </div>
             <div class="info-box" style="text-align: right;">
                 <h3>Detail Invoice:</h3>
                 <p>
                     <strong>Tanggal Invoice:</strong><br>
-                    {{ \Carbon\Carbon::parse($order->invoice_date)->format('d F Y') }}<br><br>
+                    24 December 2025<br><br>
                     <strong>Tanggal Order:</strong><br>
-                    {{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d F Y') : $order->tanggal_order->format('d F Y') }}<br><br>
+                    25 December 2025<br><br>
                     <strong>Status:</strong><br>
-                    <span class="status-badge status-{{ $order->status }}">{{ ucfirst($order->status) }}</span>
+                    <span class="status-badge status-pending">Pending</span>
                 </p>
             </div>
-        </div>
-
-        <!-- Horizontal visual timeline -->
-        <div class="horizontal-timeline">
-            @php
-                $steps = [
-                    ['key' => 'pending', 'label' => 'Order Dibuat', 'sub' => 'Menunggu diproses', 'icon' => 'fa-clock'],
-                    ['key' => 'proses', 'label' => 'Dalam Proses', 'sub' => 'Sedang dikerjakan', 'icon' => 'fa-spinner'],
-                    ['key' => 'selesai', 'label' => 'Selesai', 'sub' => 'Siap diambil', 'icon' => 'fa-check-circle'],
-                    ['key' => 'diambil', 'label' => 'Diambil', 'sub' => 'Telah diambil', 'icon' => 'fa-box-open'],
-                ];
-            @endphp
-
-            @foreach($steps as $step)
-                @php $isActive = ($order->status === $step['key']); @endphp
-                <div class="timeline-step {{ $isActive ? 'active' : '' }}">
-                    <div class="icon"><i class="fas {{ $step['icon'] }}"></i></div>
-                    <div class="label">{{ $step['label'] }}</div>
-                    <div class="sub">{{ $step['sub'] }}</div>
-                </div>
-            @endforeach
         </div>
 
         <!-- Items Table -->
@@ -382,14 +276,12 @@
             <tbody>
                 <tr>
                     <td>
-                        <strong>{{ $order->package->nama ?? 'Custom' }}</strong>
-                        @if($order->package)
-                            <br><small style="color: #999;">{{ $order->package->deskripsi }}</small>
-                        @endif
-                    </td>
-                    <td>{{ $order->berat ? number_format($order->berat, 1) . ' kg' : '-' }}</td>
-                    <td>Rp {{ number_format($order->package->harga ?? 0, 0, ',', '.') }}</td>
-                    <td class="text-right">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
+                        <strong>Cuci Boneka</strong>
+                                                    <br><small style="color: #999;">Paket khusus untuk mencuci boneka ukuran sedang hingga besar dengan treatment khusus.</small>
+                                            </td>
+                    <td>2.0 kg</td>
+                    <td>Rp 15.000</td>
+                    <td class="text-right">Rp 30.000</td>
                 </tr>
             </tbody>
         </table>
@@ -398,49 +290,26 @@
         <div class="totals">
             <div class="total-row">
                 <span>Subtotal:</span>
-                <span>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                <span>Rp 30.000</span>
             </div>
             <div class="total-row grand-total">
                 <span>TOTAL:</span>
-                <span>Rp {{ number_format($order->total_harga, 0, ',', '.') }}</span>
+                <span>Rp 30.000</span>
             </div>
         </div>
 
         <!-- Notes -->
-        @if($order->catatan)
-        <div class="notes">
-            <h4>Catatan:</h4>
-            <p>{{ $order->catatan }}</p>
-        </div>
-        @endif
-
+        
         <!-- Additional Info -->
-        @if($order->package)
-        <div class="notes" style="margin-top: 15px; background-color: #f0f9ff; border-left-color: #3b82f6;">
+                <div class="notes" style="margin-top: 15px; background-color: #f0f9ff; border-left-color: #3b82f6;">
             <h4>Informasi Layanan:</h4>
             <p>
-                Estimasi waktu pengerjaan: <strong>{{ $order->package->durasi_hari }} hari</strong><br>
-                Tanggal estimasi selesai: <strong>{{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->addDays($order->package->durasi_hari)->format('d F Y') : $order->tanggal_order->addDays($order->package->durasi_hari)->format('d F Y') }}</strong>
+                Estimasi waktu pengerjaan: <strong>2 hari</strong><br>
+                Tanggal estimasi selesai: <strong>27 December 2025</strong>
             </p>
         </div>
-        @endif
-
+        
         <!-- Footer -->
-        <!-- Timeline -->
-        <div style="margin-top: 30px;">
-            <h4 style="margin-bottom:10px;color:#444;">Timeline Status</h4>
-            <div style="border-left:3px solid #e5e7eb; padding-left:15px;">
-                @foreach($order->statusLogs()->orderBy('created_at','asc')->get() as $log)
-                    <div style="margin-bottom:14px;">
-                        <div style="font-size:13px; color:#374151; font-weight:600;">{{ ucfirst($log->status) }} <span style="font-weight:400; color:#6b7280; font-size:12px;">— {{ $log->created_at->format('d M Y H:i') }}</span></div>
-                        @if($log->note)
-                            <div style="font-size:13px; color:#4b5563; margin-top:4px;">{{ $log->note }}</div>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-        </div>
-
         <div class="footer">
             <p>Terima kasih atas kepercayaan Anda menggunakan layanan FreshClean Laundry</p>
             <p style="margin-top: 5px;">Invoice ini dicetak secara digital dan sah tanpa tanda tangan</p>

@@ -7,6 +7,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Jobs\SendWhatsAppJob;
+use App\Models\OrderStatusLog;
+use Illuminate\Support\Facades\Auth;
 
 class Order extends Model
 {
@@ -28,11 +30,51 @@ class Order extends Model
             }
         });
 
+        // After create, record initial status log
+        static::created(function ($order) {
+            try {
+                OrderStatusLog::create([
+                    'order_id' => $order->id,
+                    'status' => $order->status ?? 'pending',
+                    'note' => 'Order dibuat',
+                    'user_id' => Auth::id() ?? null,
+                ]);
+                // If a public invoice file exists (created by controller), dispatch WhatsApp job with URL
+                try {
+                    $filename = $order->invoice_number . '.html';
+                    $path = public_path('invoices' . DIRECTORY_SEPARATOR . $filename);
+                    if (file_exists($path)) {
+                        $invoiceUrl = url('invoices/' . $filename);
+                        // Dispatch created template
+                        SendWhatsAppJob::dispatch($order->id, $invoiceUrl, 'created');
+                    }
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        });
+
         static::updated(function ($order) {
-            // Cek apakah kolom status berubah dan baru menjadi 'selesai'
-            if ($order->isDirty('status') && $order->status === 'selesai' && $order->getOriginal('status') !== 'selesai') {
-                // Dispatch a queued job to send WhatsApp (more reliable, allows retries)
-                SendWhatsAppJob::dispatch($order->id);
+            // If status changed, create status log
+            if ($order->isDirty('status')) {
+                try {
+                    OrderStatusLog::create([
+                        'order_id' => $order->id,
+                        'status' => $order->status,
+                        'note' => 'Status diubah dari ' . $order->getOriginal('status') . ' ke ' . $order->status,
+                        'user_id' => Auth::id() ?? null,
+                    ]);
+                } catch (\Throwable $e) {
+                    report($e);
+                }
+
+                // Dispatch WhatsApp when status becomes 'selesai'
+                if ($order->status === 'selesai' && $order->getOriginal('status') !== 'selesai') {
+                    // Use completed template when status becomes selesai
+                    SendWhatsAppJob::dispatch($order->id, null, 'completed');
+                }
             }
         });
 
@@ -97,5 +139,10 @@ class Order extends Model
     public function package()
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function statusLogs()
+    {
+        return $this->hasMany(OrderStatusLog::class, 'order_id');
     }
 }

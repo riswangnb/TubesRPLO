@@ -78,9 +78,7 @@
             50% { transform: translate3d(0,5px,0); }
         }
 
-        /* --- New Premium Hover Effects --- */
-        
-        /* 1. Base Card Transition (Bouncy) */
+        /* --- Premium Hover Effects --- */
         .bento-card {
             transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
@@ -90,7 +88,6 @@
             border-color: rgba(0, 194, 255, 0.3);
         }
 
-        /* 2. Shine Effect (Kilau Kaca) */
         .hover-shine {
             position: relative;
             overflow: hidden;
@@ -116,26 +113,47 @@
             100% { left: 150%; }
         }
         
-        /* --- Custom Cursor --- */
-        .cursor-bubble {
-            width: 30px; height: 30px;
-            border: 2px solid rgba(0, 194, 255, 0.8);
-            border-radius: 50%;
-            position: fixed; pointer-events: none; z-index: 9999;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s, width 0.3s, height 0.3s;
-            background: rgba(255,255,255,0.1); backdrop-filter: blur(2px);
+        /* --- Soap Bubble Cursor Effect (NEW) --- */
+        body {
+            /* Opsional: Ubah ke 'none' jika ingin menyembunyikan kursor asli sepenuhnya */
+            cursor: default; 
         }
-        body.hovering .cursor-bubble {
-            width: 60px; height: 60px;
-            background: rgba(0, 194, 255, 0.2);
-            border-color: #00C2FF;
+
+        .soap-bubble {
+            position: fixed;
+            border-radius: 50%;
+            /* Gradient untuk efek kilau sabun */
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
+            box-shadow: 0 0 2px rgba(255, 255, 255, 0.5), inset 0 0 4px rgba(0, 194, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            pointer-events: none; /* Agar klik tembus */
+            z-index: 9999;
+            animation: pop-fade 1s ease-out forwards;
+            backdrop-filter: blur(1px);
+        }
+
+        @keyframes pop-fade {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5);
+                opacity: 0.8;
+            }
+            50% {
+                transform: translate(-50%, -80%) scale(1.2); /* Naik sedikit seperti balon udara */
+                opacity: 0.6;
+            }
+            100% {
+                transform: translate(-50%, -150%) scale(0); /* Pecah */
+                opacity: 0;
+            }
+        }
+        
+        /* Cursor Pointer untuk elemen interaktif */
+        .hover-trigger:hover, button:hover, a:hover {
+            cursor: pointer;
         }
     </style>
 </head>
-<body class="bg-surface text-slate-800 selection:bg-brand selection:text-white cursor-none overflow-x-hidden">
-
-    <div class="cursor-bubble hidden md:block"></div>
+<body class="bg-surface text-slate-800 selection:bg-brand selection:text-white overflow-x-hidden">
 
     <header class="fixed w-full top-0 z-50 py-4 transition-all duration-300">
         <nav class="container mx-auto px-6 max-w-6xl">
@@ -190,10 +208,10 @@
 
             <div class="relative h-[500px] hidden lg:block" data-aos="fade-left" data-aos-duration="1200">
                 <div class="absolute top-10 left-10 w-72 h-96 rounded-[2rem] overflow-hidden border-4 border-white/20 shadow-xl -rotate-6 z-10 transition duration-500 hover:z-30 hover:rotate-0 hover-trigger bg-white">
-                    <img src="{{ asset('build/assets/img/10342764.jpg') }}" class="w-full h-full object-cover opacity-90">
+                    <img src="{{ asset('build/assets/img/10342764.jpg') }}" class="w-full h-full object-cover opacity-90" alt="Laundry Image 1">
                 </div>
                 <div class="absolute top-0 left-32 w-72 h-96 rounded-[2rem] overflow-hidden border-4 border-white/30 shadow-2xl rotate-6 z-20 transition duration-500 hover:z-30 hover:rotate-0 hover:scale-105 hover-trigger bg-white">
-                    <img src="{{ asset('build/assets/img/10392492.jpg') }}" class="w-full h-full object-cover">
+                    <img src="{{ asset('build/assets/img/10392492.jpg') }}" class="w-full h-full object-cover" alt="Laundry Image 2">
                 </div>
                 <div class="absolute bottom-20 right-10 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-30 animate-float border border-white">
                     <div class="flex items-center gap-3">
@@ -407,21 +425,43 @@
     <script>
         AOS.init({ once: true, duration: 800, offset: 100 });
 
-        // Custom Cursor Logic
-        const cursor = document.querySelector('.cursor-bubble');
-        const triggers = document.querySelectorAll('.hover-trigger');
-
+        // --- NEW: Logic Bubble Cursor ---
+        let lastBubbleTime = 0;
+        
+        // Event listener saat mouse bergerak
         document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
+            const now = Date.now();
+            // Throttle: Batasi pembuatan gelembung setiap 50ms supaya ringan
+            if (now - lastBubbleTime > 50) {
+                createBubble(e.clientX, e.clientY);
+                lastBubbleTime = now;
+            }
         });
 
-        triggers.forEach(el => {
-            el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
-            el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
-        });
+        // Fungsi membuat elemen gelembung
+        function createBubble(x, y) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('soap-bubble');
+            
+            // Random ukuran gelembung (variasi 8px - 20px)
+            const size = Math.random() * 12 + 8; 
+            bubble.style.width = `${size}px`;
+            bubble.style.height = `${size}px`;
+            
+            // Posisi di mouse
+            bubble.style.left = `${x}px`;
+            bubble.style.top = `${y}px`;
+            
+            // Masukkan ke body
+            document.body.appendChild(bubble);
 
-        // Navbar Scroll Logic
+            // Hapus elemen setelah animasi selesai (1 detik) untuk hemat memori
+            setTimeout(() => {
+                bubble.remove();
+            }, 1000);
+        }
+
+        // --- Navbar Scroll Logic ---
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav div');
             if(window.scrollY > 50) {

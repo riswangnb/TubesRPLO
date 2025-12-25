@@ -1,285 +1,275 @@
 @extends('layouts.admin')
 
-@section('title', 'Detail Order')
-@section('header', 'Detail Order')
+@section('title', 'Detail Order #' . ($order->invoice_number ?? $order->id))
+@section('header', 'Detail Transaksi')
 
 @section('content')
-<div class="mb-6">
-    <a href="{{ route('admin.orders.index') }}" class="text-gray-600 hover:text-gray-800">
-        <i class="fas fa-arrow-left mr-2"></i>Kembali ke Daftar Order
+
+<div class="mb-8">
+    <a href="{{ route('admin.orders.index') }}" class="group inline-flex items-center gap-2 text-slate-500 hover:text-brand font-bold transition-colors">
+        <div class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:border-brand transition-colors">
+            <i class="fas fa-arrow-left text-sm group-hover:-translate-x-0.5 transition-transform"></i>
+        </div>
+        <span>Kembali ke Daftar</span>
     </a>
 </div>
 
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-    <!-- Main Content -->
-    <div class="lg:col-span-2 space-y-6">
-        <!-- Order Information -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <div class="flex justify-between items-start mb-6">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="lg:col-span-2 space-y-8">
+        
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-brand/5 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
+
+            <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8 border-b border-slate-100 pb-8 relative z-10">
                 <div>
-                    <h3 class="text-2xl font-bold text-gray-800">{{ $order->invoice_number ?? 'Order #' . $order->id }}</h3>
-                    <p class="text-sm text-gray-500 mt-1">
-                        <i class="far fa-calendar mr-1"></i>
-                        Dibuat: {{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d F Y, H:i') : $order->tanggal_order->format('d F Y, H:i') }}
+                    <div class="flex items-center gap-3 mb-2">
+                        <h3 class="text-3xl font-black text-slate-800 tracking-tight">
+                            {{ $order->invoice_number ?? 'ORD-' . str_pad($order->id, 5, '0', STR_PAD_LEFT) }}
+                        </h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold border 
+                            @if($order->status == 'pending') bg-amber-50 text-amber-600 border-amber-200
+                            @elseif($order->status == 'proses') bg-blue-50 text-blue-600 border-blue-200
+                            @elseif($order->status == 'selesai') bg-green-50 text-green-600 border-green-200
+                            @elseif($order->status == 'diambil') bg-slate-100 text-slate-600 border-slate-200
+                            @endif">
+                            {{ ucfirst($order->status) }}
+                        </span>
+                    </div>
+                    <p class="text-slate-500 font-medium flex items-center gap-2">
+                        <i class="far fa-calendar text-brand"></i>
+                        {{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d F Y, H:i') : $order->tanggal_order->format('d F Y, H:i') }}
                     </p>
                 </div>
-                <div>
-                    <span class="px-4 py-2 rounded-full text-sm font-semibold" style="
-                        @if($order->status == 'pending') background-color: #fef3c7; color: #b45309;
-                        @elseif($order->status == 'proses') background-color: #dbeafe; color: #1e40af;
-                        @elseif($order->status == 'selesai') background-color: #dcfce7; color: #166534;
-                        @elseif($order->status == 'diambil') background-color: #f3f4f6; color: #1f2937;
-                        @endif">
-                        {{ ucfirst($order->status) }}
-                    </span>
+                
+                @if($order->invoice_number)
+                <div class="text-right">
+                    <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Invoice Date</span>
+                    <span class="font-bold text-slate-700">{{ \Carbon\Carbon::parse($order->invoice_date)->format('d M Y') }}</span>
                 </div>
+                @endif
             </div>
 
-            <!-- Customer Information -->
-            <div class="border-t border-b border-gray-200 py-6 mb-6">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4">
-                    <i class="fas fa-user mr-2" style="color: #56C5D0;"></i>
-                    Informasi Pelanggan
-                </h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
+                <div class="space-y-4">
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-user-circle text-brand"></i> Pelanggan
+                    </h4>
                     <div>
-                        <p class="text-sm text-gray-500">Nama</p>
-                        <p class="text-base font-semibold text-gray-800">{{ $order->pelanggan->nama }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm text-gray-500">Telepon</p>
-                        <p class="text-base font-semibold text-gray-800">{{ $order->pelanggan->telepon }}</p>
-                    </div>
-                    <div class="md:col-span-2">
-                        <p class="text-sm text-gray-500">Alamat</p>
-                        <p class="text-base font-semibold text-gray-800">{{ $order->pelanggan->alamat }}</p>
-                    </div>
-                    @if($order->pelanggan->email)
-                    <div>
-                        <p class="text-sm text-gray-500">Email</p>
-                        <p class="text-base font-semibold text-gray-800">{{ $order->pelanggan->email }}</p>
-                    </div>
-                    @endif
-                </div>
-            </div>
-
-            <!-- Order Details -->
-            <div class="mb-6">
-                <h4 class="text-lg font-semibold text-gray-800 mb-4">
-                    <i class="fas fa-box mr-2" style="color: #56C5D0;"></i>
-                    Detail Layanan
-                </h4>
-                <div class="bg-gray-50 rounded-lg p-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-gray-500">Paket Layanan</p>
-                            <p class="text-base font-semibold text-gray-800">{{ $order->package->nama ?? '-' }}</p>
+                        <p class="text-lg font-bold text-slate-800">{{ $order->pelanggan->nama }}</p>
+                        <div class="flex items-center gap-2 text-slate-500 text-sm mt-1">
+                            <i class="fas fa-phone text-xs"></i> {{ $order->pelanggan->telepon }}
                         </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Berat</p>
-                            <p class="text-base font-semibold text-gray-800">{{ $order->berat ? number_format($order->berat, 1) . ' kg' : '-' }}</p>
-                        </div>
-                        @if($order->package)
-                        <div>
-                            <p class="text-sm text-gray-500">Harga per kg</p>
-                            <p class="text-base font-semibold text-gray-800">Rp {{ number_format($order->package->harga, 0, ',', '.') }}</p>
-                        </div>
-                        <div>
-                            <p class="text-sm text-gray-500">Estimasi Selesai</p>
-                            <p class="text-base font-semibold text-gray-800">{{ $order->package->durasi_hari }} hari</p>
-                        </div>
-                        <div class="col-span-2">
-                            <p class="text-sm text-gray-500">Deskripsi Layanan</p>
-                            <p class="text-base text-gray-700">{{ $order->package->deskripsi }}</p>
+                        @if($order->pelanggan->email)
+                        <div class="flex items-center gap-2 text-slate-500 text-sm mt-1">
+                            <i class="fas fa-envelope text-xs"></i> {{ $order->pelanggan->email }}
                         </div>
                         @endif
                     </div>
                 </div>
+
+                <div class="space-y-4">
+                    <h4 class="text-sm font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                        <i class="fas fa-map-marker-alt text-brand"></i> Alamat
+                    </h4>
+                    <p class="text-slate-600 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                        {{ $order->pelanggan->alamat }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+            <h4 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"><i class="fas fa-box"></i></span>
+                Detail Layanan
+            </h4>
+
+            <div class="overflow-hidden rounded-2xl border border-slate-100">
+                <table class="w-full">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-bold text-slate-500 uppercase">Item</th>
+                            <th class="px-6 py-4 text-center text-xs font-bold text-slate-500 uppercase">Berat (Kg)</th>
+                            <th class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase">Harga/Kg</th>
+                            <th class="px-6 py-4 text-right text-xs font-bold text-slate-500 uppercase">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <tr>
+                            <td class="px-6 py-4">
+                                <span class="font-bold text-slate-700 block">{{ $order->package->nama ?? 'Unknown Package' }}</span>
+                                <span class="text-xs text-slate-500">{{ $order->package->deskripsi ?? '' }}</span>
+                            </td>
+                            <td class="px-6 py-4 text-center font-mono text-slate-600">
+                                {{ $order->berat ? number_format($order->berat, 1) : '0' }}
+                            </td>
+                            <td class="px-6 py-4 text-right font-mono text-slate-600">
+                                Rp {{ number_format($order->package->harga ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="px-6 py-4 text-right font-bold text-slate-800">
+                                Rp {{ number_format($order->total_harga, 0, ',', '.') }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <!-- Catatan -->
             @if($order->catatan)
-            <div class="mb-6">
-                <h4 class="text-lg font-semibold text-gray-800 mb-3">
-                    <i class="fas fa-sticky-note mr-2" style="color: #56C5D0;"></i>
-                    Catatan
-                </h4>
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded">
-                    <p class="text-sm text-gray-700">{{ $order->catatan }}</p>
+            <div class="mt-6">
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-5 flex gap-4">
+                    <i class="fas fa-sticky-note text-amber-400 text-xl mt-0.5"></i>
+                    <div>
+                        <h5 class="font-bold text-amber-800 text-sm mb-1">Catatan Pesanan</h5>
+                        <p class="text-amber-700 text-sm">{{ $order->catatan }}</p>
+                    </div>
                 </div>
             </div>
             @endif
         </div>
 
-        <!-- Timeline -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h4 class="text-lg font-semibold text-gray-800 mb-6">
-                <i class="fas fa-history mr-2" style="color: #56C5D0;"></i>
-                Timeline Status
+        <div class="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+            <h4 class="text-lg font-bold text-slate-800 mb-8 flex items-center gap-2">
+                <span class="w-8 h-8 rounded-lg bg-blue-100 text-brand-dark flex items-center justify-center"><i class="fas fa-history"></i></span>
+                Riwayat Status
             </h4>
-            <div class="relative">
-                <div class="absolute left-5 top-0 h-full w-0.5 bg-gray-200"></div>
-                
-                <div class="relative mb-6 flex items-start">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full z-10" style="background-color: {{ $order->status == 'pending' || $order->status == 'proses' || $order->status == 'selesai' || $order->status == 'diambil' ? '#56C5D0' : '#d1d5db' }};">
-                        <i class="fas fa-clock text-white text-sm"></i>
-                    </div>
-                    <div class="ml-4 bg-gray-50 rounded-lg p-4 flex-1">
-                        <p class="font-semibold text-gray-800">Order Dibuat (Pending)</p>
-                        <p class="text-sm text-gray-500">Order berhasil dibuat dan menunggu diproses</p>
+            
+            <div class="relative pl-4 space-y-8">
+                <div class="absolute top-2 left-[27px] h-[calc(100%-20px)] w-0.5 bg-slate-100"></div>
+
+                <div class="relative flex gap-6 group">
+                    <div class="relative z-10 w-6 h-6 rounded-full border-4 {{ in_array($order->status, ['pending', 'proses', 'selesai', 'diambil']) ? 'border-brand bg-white ring-4 ring-brand/10' : 'border-slate-200 bg-slate-50' }} transition-all"></div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm">Order Dibuat</p>
+                        <p class="text-xs text-slate-500 mt-1">Order masuk ke sistem (Pending).</p>
                         @if($order->created_at)
-                        <p class="text-xs text-gray-400 mt-1">{{ $order->created_at->format('d F Y, H:i') }}</p>
+                            <span class="inline-block mt-1 px-2 py-0.5 bg-slate-100 rounded text-[10px] font-mono text-slate-500">{{ $order->created_at->format('d/m/Y H:i') }}</span>
                         @endif
                     </div>
                 </div>
 
-                <div class="relative mb-6 flex items-start">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full z-10" style="background-color: {{ $order->status == 'proses' || $order->status == 'selesai' || $order->status == 'diambil' ? '#56C5D0' : '#d1d5db' }};">
-                        <i class="fas fa-spinner text-white text-sm"></i>
-                    </div>
-                    <div class="ml-4 bg-gray-50 rounded-lg p-4 flex-1">
-                        <p class="font-semibold text-gray-800">Dalam Proses</p>
-                        <p class="text-sm text-gray-500">Order sedang dikerjakan oleh team</p>
-                        @if($order->status == 'proses' || $order->status == 'selesai' || $order->status == 'diambil')
-                        <p class="text-xs text-gray-400 mt-1">Status saat ini</p>
-                        @endif
+                <div class="relative flex gap-6 group">
+                    <div class="relative z-10 w-6 h-6 rounded-full border-4 {{ in_array($order->status, ['proses', 'selesai', 'diambil']) ? 'border-brand bg-white ring-4 ring-brand/10' : 'border-slate-200 bg-slate-50' }} transition-all"></div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm {{ $order->status == 'proses' ? 'text-brand' : '' }}">Sedang Dikerjakan</p>
+                        <p class="text-xs text-slate-500 mt-1">Pakaian sedang dicuci/disetrika.</p>
                     </div>
                 </div>
 
-                <div class="relative mb-6 flex items-start">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full z-10" style="background-color: {{ $order->status == 'selesai' || $order->status == 'diambil' ? '#56C5D0' : '#d1d5db' }};">
-                        <i class="fas fa-check text-white text-sm"></i>
-                    </div>
-                    <div class="ml-4 bg-gray-50 rounded-lg p-4 flex-1">
-                        <p class="font-semibold text-gray-800">Selesai</p>
-                        <p class="text-sm text-gray-500">Order sudah selesai dan siap diambil</p>
-                        @if($order->status == 'selesai' || $order->status == 'diambil')
-                        <p class="text-xs text-gray-400 mt-1">Status saat ini</p>
-                        @endif
+                <div class="relative flex gap-6 group">
+                    <div class="relative z-10 w-6 h-6 rounded-full border-4 {{ in_array($order->status, ['selesai', 'diambil']) ? 'border-brand bg-white ring-4 ring-brand/10' : 'border-slate-200 bg-slate-50' }} transition-all"></div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm {{ $order->status == 'selesai' ? 'text-brand' : '' }}">Selesai</p>
+                        <p class="text-xs text-slate-500 mt-1">Siap untuk diambil/diantar.</p>
                     </div>
                 </div>
 
-                <div class="relative flex items-start">
-                    <div class="flex items-center justify-center w-10 h-10 rounded-full z-10" style="background-color: {{ $order->status == 'diambil' ? '#56C5D0' : '#d1d5db' }};">
-                        <i class="fas fa-box-open text-white text-sm"></i>
-                    </div>
-                    <div class="ml-4 bg-gray-50 rounded-lg p-4 flex-1">
-                        <p class="font-semibold text-gray-800">Diambil</p>
-                        <p class="text-sm text-gray-500">Order telah diambil oleh pelanggan</p>
-                        @if($order->status == 'diambil')
-                        <p class="text-xs text-gray-400 mt-1">Status saat ini</p>
-                        @endif
+                <div class="relative flex gap-6 group">
+                    <div class="relative z-10 w-6 h-6 rounded-full border-4 {{ $order->status == 'diambil' ? 'border-brand bg-white ring-4 ring-brand/10' : 'border-slate-200 bg-slate-50' }} transition-all"></div>
+                    <div>
+                        <p class="font-bold text-slate-800 text-sm {{ $order->status == 'diambil' ? 'text-brand' : '' }}">Pesanan Diambil</p>
+                        <p class="text-xs text-slate-500 mt-1">Transaksi selesai sepenuhnya.</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sidebar -->
     <div class="lg:col-span-1 space-y-6">
-        <!-- Total Pembayaran -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h4 class="text-lg font-semibold text-gray-800 mb-4">Total Pembayaran</h4>
-            <div class="text-center py-6 bg-linear-to-r from-blue-50 to-cyan-50 rounded-lg">
-                <p class="text-sm text-gray-600 mb-2">Total Harga</p>
-                <p class="text-3xl font-bold" style="color: #56C5D0;">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</p>
+        
+        <div class="bg-gradient-to-br from-brand to-brand-dark rounded-[2rem] p-8 text-white shadow-xl shadow-brand/20 relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-xl group-hover:scale-150 transition-transform duration-700"></div>
+            
+            <p class="text-brand-accent text-xs font-bold uppercase tracking-widest mb-2">Total Tagihan</p>
+            <h2 class="text-4xl font-black mb-4 tracking-tight">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</h2>
+            
+            <div class="h-px bg-white/20 my-4"></div>
+            
+            <div class="flex justify-between text-sm text-white/80 font-medium">
+                <span>Status</span>
+                <span class="text-white flex items-center gap-1">
+                    @if($order->status == 'diambil')
+                        <i class="fas fa-check-circle text-brand-accent"></i> Lunas
+                    @else
+                        <i class="fas fa-clock"></i> Belum Lunas
+                    @endif
+                </span>
             </div>
         </div>
 
-        <!-- Update Status -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h4 class="text-lg font-semibold text-gray-800 mb-4">
-                <i class="fas fa-sync-alt mr-2" style="color: #56C5D0;"></i>
-                Update Status
-            </h4>
-            <div class="space-y-2">
+        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
+            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 px-2">Workflow</h4>
+            
+            <div class="space-y-3">
                 @if($order->status == 'pending')
-                <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="proses">
-                    <button type="submit" class="w-full text-center text-white px-4 py-3 rounded-lg font-semibold hover:opacity-90 transition" style="background-color: #3b82f6;">
-                        <i class="fas fa-play mr-2"></i>Mulai Proses
-                    </button>
-                </form>
+                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="proses">
+                        <button type="submit" class="w-full flex items-center justify-center gap-3 px-4 py-4 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 hover:shadow-lg transition-all duration-200">
+                            <i class="fas fa-play"></i> Mulai Proses
+                        </button>
+                    </form>
                 @endif
 
                 @if($order->status == 'proses')
-                <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="selesai">
-                    <button type="submit" class="w-full text-center text-white px-4 py-3 rounded-lg font-semibold hover:opacity-90 transition" style="background-color: #10b981;">
-                        <i class="fas fa-check mr-2"></i>Tandai Selesai
-                    </button>
-                </form>
+                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="selesai">
+                        <button type="submit" class="w-full flex items-center justify-center gap-3 px-4 py-4 bg-emerald-500 text-white rounded-xl font-bold hover:bg-emerald-600 hover:shadow-lg transition-all duration-200">
+                            <i class="fas fa-check"></i> Tandai Selesai
+                        </button>
+                    </form>
                 @endif
 
                 @if($order->status == 'selesai')
-                <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
-                    @csrf @method('PATCH')
-                    <input type="hidden" name="status" value="diambil">
-                    <button type="submit" class="w-full text-center text-white px-4 py-3 rounded-lg font-semibold hover:opacity-90 transition" style="background-color: #6b7280;">
-                        <i class="fas fa-box-open mr-2"></i>Sudah Diambil
-                    </button>
-                </form>
+                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}">
+                        @csrf @method('PATCH')
+                        <input type="hidden" name="status" value="diambil">
+                        <button type="submit" class="w-full flex items-center justify-center gap-3 px-4 py-4 bg-slate-800 text-white rounded-xl font-bold hover:bg-slate-900 hover:shadow-lg transition-all duration-200">
+                            <i class="fas fa-hand-holding"></i> Serahkan ke Pelanggan
+                        </button>
+                    </form>
                 @endif
 
                 @if($order->status == 'diambil')
-                <div class="text-center py-3 bg-gray-100 rounded-lg">
-                    <i class="fas fa-check-circle text-green-600 text-2xl mb-2"></i>
-                    <p class="text-sm text-gray-600 font-semibold">Order Selesai</p>
-                </div>
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center text-slate-500 text-sm font-medium">
+                        <i class="fas fa-check-double text-brand mb-1 block text-lg"></i>
+                        Order Selesai
+                    </div>
                 @endif
             </div>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h4 class="text-lg font-semibold text-gray-800 mb-4">Aksi Lainnya</h4>
-            <div class="space-y-3">
-                <a href="{{ route('admin.orders.invoice', $order) }}" class="block w-full text-center text-white px-4 py-3 rounded-lg font-semibold hover:opacity-90 transition" style="background-color: #10b981;">
-                    <i class="fas fa-file-invoice mr-2"></i>Cetak Invoice
+        <div class="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100">
+            <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4 px-2">Admin Tools</h4>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <a href="{{ route('admin.orders.invoice', $order) }}" class="flex flex-col items-center justify-center gap-2 p-4 bg-slate-50 text-slate-700 rounded-xl font-bold hover:bg-slate-100 hover:text-brand transition-all border border-slate-100">
+                    <i class="fas fa-print text-xl"></i>
+                    <span class="text-xs">Invoice</span>
                 </a>
-                <a href="{{ route('admin.orders.edit', $order) }}" class="block w-full text-center text-white px-4 py-3 rounded-lg font-semibold hover:opacity-90 transition" style="background-color: #56C5D0;">
-                    <i class="fas fa-edit mr-2"></i>Edit Order
+                
+                <a href="{{ route('admin.orders.edit', $order) }}" class="flex flex-col items-center justify-center gap-2 p-4 bg-slate-50 text-slate-700 rounded-xl font-bold hover:bg-slate-100 hover:text-brand transition-all border border-slate-100">
+                    <i class="fas fa-pen text-xl"></i>
+                    <span class="text-xs">Edit</span>
                 </a>
-                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" onsubmit="return confirm('Yakin ingin menghapus order ini?')">
+                
+                <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" onsubmit="return confirm('Yakin ingin menghapus order ini?')" class="col-span-2">
                     @csrf @method('DELETE')
-                    <button type="submit" class="w-full text-center bg-red-500 hover:bg-red-600 text-white px-4 py-3 rounded-lg font-semibold transition">
-                        <i class="fas fa-trash mr-2"></i>Hapus Order
+                    <button type="submit" class="w-full flex items-center justify-center gap-2 p-4 bg-red-50 text-red-500 rounded-xl font-bold hover:bg-red-500 hover:text-white transition-all border border-red-100">
+                        <i class="fas fa-trash-alt"></i>
+                        <span class="text-sm">Hapus Order</span>
                     </button>
                 </form>
             </div>
         </div>
 
-        <!-- Invoice Info -->
-        @if($order->invoice_number)
-        <div class="bg-white rounded-lg shadow-md p-6">
-            <h4 class="text-lg font-semibold text-gray-800 mb-4">Informasi Invoice</h4>
-            <div class="space-y-3">
-                <div>
-                    <p class="text-sm text-gray-500">Nomor Invoice</p>
-                    <p class="text-base font-mono font-semibold text-gray-800">{{ $order->invoice_number }}</p>
-                </div>
-                @if($order->invoice_date)
-                <div>
-                    <p class="text-sm text-gray-500">Tanggal Invoice</p>
-                    <p class="text-base font-semibold text-gray-800">{{ \Carbon\Carbon::parse($order->invoice_date)->format('d F Y') }}</p>
-                </div>
-                @endif
-            </div>
-        </div>
-        @endif
-
-        <!-- System Info -->
-        <div class="bg-gray-50 rounded-lg p-4 text-xs text-gray-500">
-            <p class="mb-1"><strong>Order ID:</strong> #{{ $order->id }}</p>
-            @if($order->created_at)
-            <p class="mb-1"><strong>Dibuat:</strong> {{ $order->created_at->format('d/m/Y H:i') }}</p>
-            @endif
-            @if($order->updated_at)
-            <p><strong>Update Terakhir:</strong> {{ $order->updated_at->format('d/m/Y H:i') }}</p>
-            @endif
+        <div class="px-4 text-center">
+            <p class="text-[10px] text-slate-400 font-mono">
+                ID: #{{ $order->id }} • Created: {{ $order->created_at->diffForHumans() }}
+            </p>
         </div>
     </div>
 </div>
+
 @endsection

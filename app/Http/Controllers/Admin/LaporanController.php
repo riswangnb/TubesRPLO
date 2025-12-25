@@ -8,6 +8,8 @@ use App\Models\Order;
 use App\Models\Package;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Exports\LaporanExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class LaporanController extends Controller
 {

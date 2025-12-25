@@ -6,10 +6,16 @@
 @section('content')
 <div class="mb-6 flex justify-between items-center">
     <h3 class="text-xl font-bold text-gray-800">Daftar Orders</h3>
-    <a href="{{ route('admin.orders.create') }}" class="text-white px-4 py-2 rounded-lg flex items-center space-x-2" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#3FA9B5'" onmouseout="this.style.backgroundColor='#56C5D0'">
-        <i class="fas fa-plus"></i>
-        <span>Tambah Order</span>
-    </a>
+    <div class="flex gap-3">
+        <a href="{{ route('admin.orders.export', request()->query()) }}" class="text-white px-4 py-2 rounded-lg flex items-center space-x-2" style="background-color: #10b981;" onmouseover="this.style.backgroundColor='#059669'" onmouseout="this.style.backgroundColor='#10b981'">
+            <i class="fas fa-file-excel"></i>
+            <span>Export Excel</span>
+        </a>
+        <a href="{{ route('admin.orders.create') }}" class="text-white px-4 py-2 rounded-lg flex items-center space-x-2" style="background-color: #56C5D0;" onmouseover="this.style.backgroundColor='#3FA9B5'" onmouseout="this.style.backgroundColor='#56C5D0'">
+            <i class="fas fa-plus"></i>
+            <span>Tambah Order</span>
+        </a>
+    </div>
 </div>
 
 <!-- Search & Filter Section -->
@@ -101,24 +107,30 @@
             </thead>
             <tbody>
                 @forelse($orders as $order)
-                <tr class="border-b hover:bg-gray-50 transition">
+                <tr class="border-b hover:bg-gray-50 transition cursor-pointer" onclick="window.location='{{ route('admin.orders.show', $order) }}'">
                     <td class="px-4 py-3 text-sm text-gray-600 font-medium">{{ $order->invoice_number ?? '-' }}</td>
                     <td class="px-4 py-3 text-sm text-gray-600">{{ is_string($order->tanggal_order) ? \Carbon\Carbon::parse($order->tanggal_order)->format('d/m/Y') : $order->tanggal_order->format('d/m/Y') }}</td>
                     <td class="px-4 py-3 text-sm text-gray-600">{{ $order->pelanggan->nama }}</td>
                     <td class="px-4 py-3 text-sm text-gray-600">{{ $order->package->nama ?? '-' }}</td>
                     <td class="px-4 py-3 text-sm text-gray-600 text-center">{{ $order->berat ? number_format($order->berat, 1) . ' kg' : '-' }}</td>
                     <td class="px-4 py-3 text-sm text-gray-800 font-semibold text-right">Rp {{ number_format($order->total_harga, 0, ',', '.') }}</td>
-                    <td class="px-4 py-3 text-sm text-center">
-                        <span class="px-2.5 py-1 rounded-full text-xs font-semibold" style="
-                            @if($order->status == 'pending') background-color: #fef3c7; color: #b45309;
-                            @elseif($order->status == 'proses') background-color: #dbeafe; color: #1e40af;
-                            @elseif($order->status == 'selesai') background-color: #dcfce7; color: #166534;
-                            @elseif($order->status == 'diambil') background-color: #f3f4f6; color: #1f2937;
-                            @endif">
-                            {{ ucfirst($order->status) }}
-                        </span>
+                    <td class="px-4 py-3 text-sm text-center" onclick="event.stopPropagation()">
+                        <form method="POST" action="{{ route('admin.orders.updateStatus', $order) }}" class="inline-block status-form-{{ $order->id }}">
+                            @csrf @method('PATCH')
+                            <select name="status" onchange="this.form.submit()" class="px-2.5 py-1 rounded-full text-xs font-semibold border-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1" style="
+                                @if($order->status == 'pending') background-color: #fef3c7; color: #b45309;
+                                @elseif($order->status == 'proses') background-color: #dbeafe; color: #1e40af;
+                                @elseif($order->status == 'selesai') background-color: #dcfce7; color: #166534;
+                                @elseif($order->status == 'diambil') background-color: #f3f4f6; color: #1f2937;
+                                @endif">
+                                <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="proses" {{ $order->status == 'proses' ? 'selected' : '' }}>Proses</option>
+                                <option value="selesai" {{ $order->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                                <option value="diambil" {{ $order->status == 'diambil' ? 'selected' : '' }}>Diambil</option>
+                            </select>
+                        </form>
                     </td>
-                    <td class="px-4 py-3 text-sm text-center space-x-1">
+                    <td class="px-4 py-3 text-sm text-center space-x-1" onclick="event.stopPropagation()">
                         <a href="{{ route('admin.orders.invoice', $order) }}" class="text-white px-2 py-1 rounded text-xs inline-block" style="background-color: #10b981;" title="Invoice">
                             <i class="fas fa-file-invoice"></i>
                         </a>
@@ -153,6 +165,9 @@
     {{ $orders->links() }}
 </div>
 
+@endsection
+
+@push('scripts')
 <script>
 function toggleFilter() {
     const filter = document.getElementById('advancedFilter');
@@ -162,5 +177,25 @@ function toggleFilter() {
         filter.style.display = 'none';
     }
 }
+
+// Auto change select color when status changes
+document.querySelectorAll('select[name="status"]').forEach(select => {
+    select.addEventListener('change', function() {
+        const status = this.value;
+        if (status === 'pending') {
+            this.style.backgroundColor = '#fef3c7';
+            this.style.color = '#b45309';
+        } else if (status === 'proses') {
+            this.style.backgroundColor = '#dbeafe';
+            this.style.color = '#1e40af';
+        } else if (status === 'selesai') {
+            this.style.backgroundColor = '#dcfce7';
+            this.style.color = '#166534';
+        } else if (status === 'diambil') {
+            this.style.backgroundColor = '#f3f4f6';
+            this.style.color = '#1f2937';
+        }
+    });
+});
 </script>
-@endsection
+@endpush

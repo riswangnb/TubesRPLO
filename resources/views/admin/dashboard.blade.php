@@ -75,7 +75,7 @@
             </thead>
             <tbody>
                 @foreach($recentOrders as $order)
-                <tr class="border-b hover:bg-gray-50">
+                <tr class="border-b hover:bg-gray-50 cursor-pointer transition" onclick="window.location='{{ route('admin.orders.show', $order) }}'">
                     <td class="px-6 py-3 text-sm text-gray-600 font-medium">{{ $order->invoice_number ?? '-' }}</td>
                     <td class="px-6 py-3 text-sm text-gray-600">{{ $order->pelanggan->nama }}</td>
                     <td class="px-6 py-3 text-sm text-gray-600">{{ $order->package->nama ?? '-' }}</td>

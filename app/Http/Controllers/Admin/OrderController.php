@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\Pelanggan;
 use App\Models\Package;
 use Illuminate\Http\Request;
+use App\Exports\OrdersExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller
 {
@@ -74,8 +76,36 @@ class OrderController extends Controller
             $validated['total_harga'] = $package->harga * ($validated['berat'] ?? 1);
         }
 
-        Order::create($validated);
+        $order = Order::create($validated);
+
+        // Render invoice view HTML and save to public/invoices so pelanggan dapat mengaksesnya
+        try {
+            $order->load(['pelanggan', 'package']);
+            // Render as public invoice (hide admin-only controls)
+            $html = view('admin.orders.invoice', ['order' => $order, 'is_public' => true])->render();
+            $dir = public_path('invoices');
+            if (!is_dir($dir)) {
+                mkdir($dir, 0755, true);
+            }
+            $filename = $order->invoice_number . '.html';
+            $path = $dir . DIRECTORY_SEPARATOR . $filename;
+            file_put_contents($path, $html);
+
+            // Dispatch WhatsApp job with invoice URL (keamanan: route invoice mungkin butuh auth, adjust jika perlu)
+            $invoiceUrl = url('invoices/' . $filename);
+            \App\Jobs\SendWhatsAppJob::dispatch($order->id, $invoiceUrl, 'created');
+        } catch (\Throwable $e) {
+            // Jangan ganggu alur utama jika gagal membuat file atau dispatch job
+            report($e);
+        }
+
         return redirect()->route('admin.orders.index')->with('success', 'Order berhasil dibuat');
+    }
+
+    public function show(Order $order)
+    {
+        $order->load(['pelanggan', 'package']);
+        return view('admin.orders.show', compact('order'));
     }
 
     public function edit(Order $order)
@@ -116,5 +146,31 @@ class OrderController extends Controller
     {
         $order->load(['pelanggan', 'package']);
         return view('admin.orders.invoice', compact('order'));
+    }
+
+    public function updateStatus(Request $request, Order $order)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,proses,selesai,diambil'
+        ]);
+
+        $order->update(['status' => $validated['status']]);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Status berhasil diupdate',
+                'status' => $order->status
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status berhasil diupdate');
+    }
+
+    public function export(Request $request)
+    {
+        $filters = $request->only(['search', 'status', 'tanggal_dari', 'tanggal_sampai', 'package_id']);
+        $filename = 'orders_' . date('Y-m-d_His') . '.xlsx';
+        return Excel::download(new OrdersExport($filters), $filename);
     }
 }

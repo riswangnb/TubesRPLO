@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pelanggan;
 use Illuminate\Http\Request;
+use App\Exports\PelanggansExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class PelangganController extends Controller
 {
@@ -66,5 +68,11 @@ class PelangganController extends Controller
     {
         $pelanggan->delete();
         return redirect()->route('admin.pelanggans.index')->with('success', 'Pelanggan berhasil dihapus');
+    }
+
+    public function export()
+    {
+        $filename = 'pelanggan_' . date('Y-m-d_His') . '.xlsx';
+        return Excel::download(new PelanggansExport(), $filename);
     }
 }

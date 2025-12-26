@@ -8,13 +8,20 @@ use App\Http\Controllers\Admin\PelangganController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Models\Package;
 
+use App\Http\Controllers\Auth\LoginController;
+
 Route::get('/', function () {
     $packages = Package::orderBy('harga', 'asc')->take(3)->get();
     return view('welcome', compact('packages'));
 });
 
+// Login routes
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 // Admin Routes
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('orders', OrderController::class, ['names' => 'admin.orders']);
     Route::get('orders/{order}/invoice', [OrderController::class, 'invoice'])->name('admin.orders.invoice');

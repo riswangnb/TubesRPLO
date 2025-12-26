@@ -7,12 +7,12 @@
     "public": false,
     "routes": [
         {
-            "src": "/test",
-            "dest": "/api/test.php"
-        },
-        {
             "src": "/build/(.*)",
             "dest": "/public/build/$1"
+        },
+        {
+            "src": "/images/(.*)",
+            "dest": "/public/images/$1"
         },
         {
             "src": "/favicon.ico",

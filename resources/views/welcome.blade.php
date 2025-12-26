@@ -407,12 +407,12 @@
             <p class="text-slate-400 mb-12 max-w-xl mx-auto text-lg">Biarkan kami yang menangani tumpukan pakaian kotor Anda.</p>
             
             <div class="flex justify-center gap-4 mb-16">
-                <a href="https://wa.me/6282297233332" class="group flex items-center gap-3 bg-brand-accent text-slate-900 px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition hover-trigger shadow-lg shadow-brand-accent/20">
+                <a href="https://wa.me/6282344005550" class="group flex items-center gap-3 bg-brand-accent text-slate-900 px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition hover-trigger shadow-lg shadow-brand-accent/20">
                     <i class="fa-brands fa-whatsapp text-2xl"></i>
                     Chat WhatsApp
                 </a>
                  <a href="#" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl hover:bg-white hover:text-slate-900 transition hover-trigger border border-white/20"><i class="fa-brands fa-instagram"></i></a>
-                <a href="#" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl hover:bg-white hover:text-slate-900 transition hover-trigger border border-white/20"><i class="fa-solid fa-map-location-dot"></i></a>
+                <a href="https://maps.app.goo.gl/sh4iEWgRk6ztxSyX8" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl hover:bg-white hover:text-slate-900 transition hover-trigger border border-white/20"><i class="fa-solid fa-map-location-dot"></i></a>
             </div>
 
             <div class="border-t border-white/10 pt-8">

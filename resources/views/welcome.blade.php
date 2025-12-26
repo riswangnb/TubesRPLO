@@ -208,10 +208,10 @@
 
             <div class="relative h-[500px] hidden lg:block" data-aos="fade-left" data-aos-duration="1200">
                 <div class="absolute top-10 left-10 w-72 h-96 rounded-[2rem] overflow-hidden border-4 border-white/20 shadow-xl -rotate-6 z-10 transition duration-500 hover:z-30 hover:rotate-0 hover-trigger bg-white">
-                    <img src="{{ asset('build/assets/img/10342764.jpg') }}" class="w-full h-full object-cover opacity-90" alt="Laundry Image 1">
+                    <img src="{{ asset('images/10342764.jpg') }}" class="w-full h-full object-cover opacity-90" alt="Laundry Image 1">
                 </div>
                 <div class="absolute top-0 left-32 w-72 h-96 rounded-[2rem] overflow-hidden border-4 border-white/30 shadow-2xl rotate-6 z-20 transition duration-500 hover:z-30 hover:rotate-0 hover:scale-105 hover-trigger bg-white">
-                    <img src="{{ asset('build/assets/img/10392492.jpg') }}" class="w-full h-full object-cover" alt="Laundry Image 2">
+                    <img src="{{ asset('images/10392492.jpg') }}" class="w-full h-full object-cover" alt="Laundry Image 2">
                 </div>
                 <div class="absolute bottom-20 right-10 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-30 animate-float border border-white">
                     <div class="flex items-center gap-3">

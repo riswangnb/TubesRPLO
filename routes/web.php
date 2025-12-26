@@ -11,7 +11,15 @@ use App\Models\Package;
 use App\Http\Controllers\Auth\LoginController;
 
 Route::get('/', function () {
-    $packages = Package::orderBy('harga', 'asc')->take(3)->get();
+    // $packages = Package::orderBy('harga', 'asc')->take(3)->get();
+    // $packages = Package::orderBy('harga', 'asc')->take(3)->get();
+
+// Gunakan data palsu sementara agar tidak error database
+$packages = collect([
+    (object) ['id' => 1, 'nama_paket' => 'Cuci Kering', 'harga' => 5000, 'deskripsi' => 'Cepat kering'],
+    (object) ['id' => 2, 'nama_paket' => 'Cuci Setrika', 'harga' => 8000, 'deskripsi' => 'Rapi wangi'],
+    (object) ['id' => 3, 'nama_paket' => 'Express', 'harga' => 15000, 'deskripsi' => '3 Jam jadi'],
+]);
     return view('welcome', compact('packages'));
 });
 

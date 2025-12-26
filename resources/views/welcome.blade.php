@@ -407,7 +407,7 @@
             <p class="text-slate-400 mb-12 max-w-xl mx-auto text-lg">Biarkan kami yang menangani tumpukan pakaian kotor Anda.</p>
             
             <div class="flex justify-center gap-4 mb-16">
-                <a href="#" class="group flex items-center gap-3 bg-brand-accent text-slate-900 px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition hover-trigger shadow-lg shadow-brand-accent/20">
+                <a href="wa.me/6282297233332" class="group flex items-center gap-3 bg-brand-accent text-slate-900 px-8 py-4 rounded-full font-bold text-lg hover:scale-105 transition hover-trigger shadow-lg shadow-brand-accent/20">
                     <i class="fa-brands fa-whatsapp text-2xl"></i>
                     Chat WhatsApp
                 </a>

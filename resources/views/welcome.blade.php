@@ -24,7 +24,6 @@
                     },
                     animation: {
                         'wave': 'wave 10s linear infinite',
-                        'wave-slow': 'wave 15s linear infinite',
                         'float': 'float 6s ease-in-out infinite',
                     },
                     keyframes: {
@@ -69,10 +68,6 @@
             animation: wave 12s cubic-bezier( 0.36, 0.45, 0.63, 0.53) -.125s infinite, swell 7s ease -1.25s infinite;
             opacity: 0.5;
         }
-        @keyframes wave {
-            0% { margin-left: 0; }
-            100% { margin-left: -1600px; }
-        }
         @keyframes swell {
             0%, 100% { transform: translate3d(0,-25px,0); }
             50% { transform: translate3d(0,5px,0); }
@@ -108,56 +103,44 @@
         .hover-shine:hover::after {
             animation: shine 0.75s cubic-bezier(0.4, 0.0, 0.2, 1);
         }
-
         @keyframes shine {
             100% { left: 150%; }
         }
         
-        /* --- Soap Bubble Cursor Effect (NEW) --- */
-        body {
-            /* Opsional: Ubah ke 'none' jika ingin menyembunyikan kursor asli sepenuhnya */
-            cursor: default; 
-        }
+        /* --- Soap Bubble Cursor Effect --- */
+        body { cursor: default; }
 
         .soap-bubble {
             position: fixed;
             border-radius: 50%;
-            /* Gradient untuk efek kilau sabun */
             background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.1));
             box-shadow: 0 0 2px rgba(255, 255, 255, 0.5), inset 0 0 4px rgba(0, 194, 255, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.4);
-            pointer-events: none; /* Agar klik tembus */
+            pointer-events: none;
             z-index: 9999;
             animation: pop-fade 1s ease-out forwards;
             backdrop-filter: blur(1px);
         }
-
         @keyframes pop-fade {
-            0% {
-                transform: translate(-50%, -50%) scale(0.5);
-                opacity: 0.8;
-            }
-            50% {
-                transform: translate(-50%, -80%) scale(1.2); /* Naik sedikit seperti balon udara */
-                opacity: 0.6;
-            }
-            100% {
-                transform: translate(-50%, -150%) scale(0); /* Pecah */
-                opacity: 0;
-            }
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+            50% { transform: translate(-50%, -80%) scale(1.2); opacity: 0.6; }
+            100% { transform: translate(-50%, -150%) scale(0); opacity: 0; }
         }
         
-        /* Cursor Pointer untuk elemen interaktif */
-        .hover-trigger:hover, button:hover, a:hover {
-            cursor: pointer;
-        }
+        .hover-trigger:hover, button:hover, a:hover { cursor: pointer; }
+
+        /* Custom Scrollbar untuk Modal */
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
     </style>
 </head>
 <body class="bg-surface text-slate-800 selection:bg-brand selection:text-white overflow-x-hidden">
 
     <header class="fixed w-full top-0 z-50 py-4 transition-all duration-300">
-        <nav class="container mx-auto px-6 max-w-6xl">
-            <div class="bg-white/80 backdrop-blur-xl border border-white/60 rounded-full px-6 py-3 flex justify-between items-center shadow-lg shadow-brand/10">
+        <nav class="container mx-auto px-6 max-w-6xl relative">
+            <div class="bg-white/80 backdrop-blur-xl border border-white/60 rounded-full px-6 py-3 flex justify-between items-center shadow-lg shadow-brand/10 relative z-50">
                 <div class="flex items-center gap-2 hover-trigger">
                     <div class="w-9 h-9 bg-brand-dark text-white rounded-full flex items-center justify-center font-bold text-lg">F</div>
                     <span class="font-bold text-lg tracking-tight">FreshClean.</span>
@@ -172,7 +155,22 @@
                 <a href="#contact" class="hidden md:block bg-brand text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg shadow-brand/30 hover:scale-105 transition hover-trigger">
                     Pesan WA
                 </a>
-                <button class="md:hidden text-xl hover-trigger"><i class="fa-solid fa-bars"></i></button>
+                
+                <button id="mobileMenuBtn" class="md:hidden text-xl hover-trigger w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-100 transition">
+                    <i class="fa-solid fa-bars transition-transform duration-300"></i>
+                </button>
+            </div>
+
+            <div id="mobileMenu" class="absolute top-full left-0 w-full mt-2 bg-white/90 backdrop-blur-xl border border-white/60 rounded-3xl shadow-xl overflow-hidden transition-all duration-300 origin-top transform scale-y-0 opacity-0 md:hidden z-40">
+                <div class="flex flex-col p-6 gap-4 font-bold text-slate-700 text-center">
+                    <a href="#home" class="py-2 hover:text-brand-dark transition" onclick="toggleMobileMenu()">Home</a>
+                    <a href="#services" class="py-2 hover:text-brand-dark transition" onclick="toggleMobileMenu()">Layanan</a>
+                    <a href="#features" class="py-2 hover:text-brand-dark transition" onclick="toggleMobileMenu()">Kenapa Kami</a>
+                    <hr class="border-slate-200">
+                    <a href="#contact" class="bg-brand text-white py-3 rounded-xl shadow-lg shadow-brand/20" onclick="toggleMobileMenu()">
+                        Pesan WA Sekarang
+                    </a>
+                </div>
             </div>
         </nav>
     </header>
@@ -208,10 +206,10 @@
 
             <div class="relative h-[500px] hidden lg:block" data-aos="fade-left" data-aos-duration="1200">
                 <div class="absolute top-10 left-10 w-72 h-96 rounded-[2rem] overflow-hidden border-4 border-white/20 shadow-xl -rotate-6 z-10 transition duration-500 hover:z-30 hover:rotate-0 hover-trigger bg-white">
-                    <img src="{{ asset('images/10342764.jpg') }}" class="w-full h-full object-cover opacity-90" alt="Laundry Image 1">
+                    <img src="/images/10342764.jpg" class="w-full h-full object-cover opacity-90" alt="Laundry Pile">
                 </div>
                 <div class="absolute top-0 left-32 w-72 h-96 rounded-[2rem] overflow-hidden border-4 border-white/30 shadow-2xl rotate-6 z-20 transition duration-500 hover:z-30 hover:rotate-0 hover:scale-105 hover-trigger bg-white">
-                    <img src="{{ asset('images/10392492.jpg') }}" class="w-full h-full object-cover" alt="Laundry Image 2">
+                    <img src="/images/10392492.jpg" class="w-full h-full object-cover" alt="Happy Customer">
                 </div>
                 <div class="absolute bottom-20 right-10 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl z-30 animate-float border border-white">
                     <div class="flex items-center gap-3">
@@ -263,14 +261,14 @@
                         <div class="flex items-end gap-2">
                             <span class="text-6xl font-black text-brand-accent group-hover:scale-110 origin-left transition-transform duration-500">10k</span><span class="text-white/70 mb-2 text-lg">/kg</span>
                         </div>
-                        <button class="w-full bg-brand-accent text-slate-900 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg group-hover:bg-white group-hover:translate-y-[-2px] group-hover:shadow-brand-accent/50 flex items-center justify-center gap-2">
+                        <button onclick="pesanWa('Express Kilat', '10k/kg')" class="w-full bg-brand-accent text-slate-900 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg group-hover:bg-white group-hover:translate-y-[-2px] group-hover:shadow-brand-accent/50 flex items-center justify-center gap-2">
                             <span>Pesan Sekarang</span>
                             <i class="fa-solid fa-arrow-right opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"></i>
                         </button>
                     </div>
                 </div>
 
-                <div class="md:col-span-2 bento-card hover-shine bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-md flex flex-col md:flex-row items-center gap-10 relative overflow-hidden group cursor-pointer" data-aos="fade-up" data-aos-delay="200">
+                <div onclick="pesanWa('Cuci Komplit', '6k/kg')" class="md:col-span-2 bento-card hover-shine bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-md flex flex-col md:flex-row items-center gap-10 relative overflow-hidden group cursor-pointer" data-aos="fade-up" data-aos-delay="200">
                     <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-brand-accent/20 rounded-full blur-3xl opacity-50 pointer-events-none group-hover:scale-150 transition duration-700"></div>
                     
                     <div class="flex-1 relative z-10">
@@ -304,7 +302,7 @@
                         <p class="text-slate-500 text-sm leading-relaxed mb-6">Deep cleaning untuk semua bahan sepatu kesayangan Anda.</p>
                         <div class="flex justify-between items-center mt-auto">
                             <span class="font-bold text-slate-900 text-2xl group-hover:text-orange-500 transition-colors">25k <span class="text-sm font-normal text-slate-400">/psg</span></span>
-                            <button class="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center text-white transition-all duration-300 group-hover:bg-orange-500 group-hover:scale-125 group-hover:rotate-[-45deg]">
+                            <button onclick="pesanWa('Cuci Sepatu', '25k/psg')" class="w-12 h-12 rounded-full bg-slate-900 flex items-center justify-center text-white transition-all duration-300 group-hover:bg-orange-500 group-hover:scale-110 hover:shadow-lg hover:shadow-orange-500/50">
                                 <i class="fa-solid fa-arrow-right"></i>
                             </button>
                         </div>
@@ -319,7 +317,7 @@
                             <h3 class="text-xl font-bold mb-2 group-hover:translate-x-2 transition-transform duration-300">Satuan & Lainnya</h3>
                             <p class="text-white/80 text-sm leading-relaxed">Bedcover, Jas, Boneka, Karpet, Gorden, dll.</p>
                         </div>
-                        <button class="mt-6 text-sm font-bold bg-white/20 py-3 px-6 rounded-xl transition-all duration-300 w-fit group-hover:bg-white group-hover:text-brand-dark group-hover:px-8">
+                        <button onclick="toggleModal(true)" class="mt-6 text-sm font-bold bg-white/20 py-3 px-6 rounded-xl transition-all duration-300 w-fit group-hover:bg-white group-hover:text-brand-dark group-hover:px-8 relative z-20">
                             Cek Daftar Harga
                         </button>
                     </div>
@@ -339,69 +337,62 @@
             </div>
 
             <div class="grid md:grid-cols-4 gap-8">
-                
                 <div class="group relative bg-white rounded-[2rem] p-8 border border-slate-100 hover:border-brand/50 shadow-sm hover:shadow-2xl hover:shadow-brand/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden hover-trigger" data-aos="fade-up" data-aos-delay="0">
                     <i class="fa-solid fa-fingerprint absolute -right-8 -bottom-8 text-9xl text-slate-50 opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-700 z-0"></i>
-                    
                     <div class="relative z-10">
                         <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 mb-6 group-hover:scale-110 group-hover:bg-blue-500 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-blue-500/30">
                             <i class="fa-solid fa-fingerprint text-3xl"></i>
                         </div>
                         <h4 class="font-bold text-xl mb-3 text-slate-900 group-hover:text-blue-600 transition-colors">Privasi Terjaga</h4>
                         <p class="text-sm text-slate-500 leading-relaxed group-hover:text-slate-600">
-                            Sistem <span class="font-semibold text-slate-700">1 Mesin 1 Pelanggan</span>. Pakaian Anda diproses eksklusif, tidak dicampur dengan milik orang lain.
+                            Sistem <span class="font-semibold text-slate-700">1 Mesin 1 Pelanggan</span>. Pakaian Anda diproses eksklusif.
                         </p>
                     </div>
                 </div>
 
                 <div class="group relative bg-white rounded-[2rem] p-8 border border-slate-100 hover:border-brand/50 shadow-sm hover:shadow-2xl hover:shadow-brand/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden hover-trigger" data-aos="fade-up" data-aos-delay="100">
                     <i class="fa-solid fa-wind absolute -right-8 -bottom-8 text-9xl text-slate-50 opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-700 z-0"></i>
-                    
                     <div class="relative z-10">
                         <div class="w-16 h-16 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-500 mb-6 group-hover:scale-110 group-hover:bg-cyan-500 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-cyan-500/30">
                             <i class="fa-solid fa-wind text-3xl"></i>
                         </div>
                         <h4 class="font-bold text-xl mb-3 text-slate-900 group-hover:text-cyan-600 transition-colors">Setrika Uap</h4>
                         <p class="text-sm text-slate-500 leading-relaxed group-hover:text-slate-600">
-                            Menggunakan teknologi <span class="font-semibold text-slate-700">Boiler High Pressure</span>. Pakaian licin sempurna, serat kain terjaga, bebas tanda gosong.
+                            Teknologi <span class="font-semibold text-slate-700">Boiler High Pressure</span>. Pakaian licin sempurna, serat terjaga.
                         </p>
                     </div>
                 </div>
 
                 <div class="group relative bg-white rounded-[2rem] p-8 border border-slate-100 hover:border-brand/50 shadow-sm hover:shadow-2xl hover:shadow-brand/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden hover-trigger" data-aos="fade-up" data-aos-delay="200">
                     <i class="fa-solid fa-flask absolute -right-8 -bottom-8 text-9xl text-slate-50 opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-700 z-0"></i>
-                    
                     <div class="relative z-10">
                         <div class="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 mb-6 group-hover:scale-110 group-hover:bg-purple-500 group-hover:text-white transition-all duration-500 shadow-sm group-hover:shadow-purple-500/30">
                             <i class="fa-solid fa-flask text-3xl"></i>
                         </div>
                         <h4 class="font-bold text-xl mb-3 text-slate-900 group-hover:text-purple-600 transition-colors">Deterjen Premium</h4>
                         <p class="text-sm text-slate-500 leading-relaxed group-hover:text-slate-600">
-                            Formula ramah lingkungan dengan <span class="font-semibold text-slate-700">Oxy-Booster</span>. Efektif angkat noda membandel sekaligus mencerahkan warna.
+                            Formula dengan <span class="font-semibold text-slate-700">Oxy-Booster</span>. Angkat noda membandel & cerahkan warna.
                         </p>
                     </div>
                 </div>
 
                 <div class="group relative bg-white rounded-[2rem] p-8 border border-slate-100 hover:border-brand/50 shadow-sm hover:shadow-2xl hover:shadow-brand/10 transition-all duration-500 hover:-translate-y-2 overflow-hidden hover-trigger" data-aos="fade-up" data-aos-delay="300">
                     <i class="fa-solid fa-shield-halved absolute -right-8 -bottom-8 text-9xl text-slate-50 opacity-0 group-hover:opacity-100 group-hover:rotate-12 transition-all duration-700 z-0"></i>
-                    
                     <div class="relative z-10">
                         <div class="w-16 h-16 rounded-2xl bg-brand-accent/20 flex items-center justify-center text-brand-dark mb-6 group-hover:scale-110 group-hover:bg-brand-accent group-hover:text-slate-900 transition-all duration-500 shadow-sm group-hover:shadow-brand-accent/50">
                             <i class="fa-solid fa-shield-halved text-3xl"></i>
                         </div>
                         <h4 class="font-bold text-xl mb-3 text-slate-900 group-hover:text-brand-dark transition-colors">Garansi 100%</h4>
                         <p class="text-sm text-slate-500 leading-relaxed group-hover:text-slate-600">
-                            Komitmen kepuasan pelanggan. Jika kurang bersih atau kurang rapi, kami <span class="font-semibold text-slate-700">Cuci Ulang Gratis</span> tanpa syarat.
+                            Jika kurang bersih atau kurang rapi, kami <span class="font-semibold text-slate-700">Cuci Ulang Gratis</span>.
                         </p>
                     </div>
                 </div>
-
             </div>
         </div>
     </section>
 
     <footer id="contact" class="bg-slate-900 text-white pt-24 pb-12 rounded-t-[3rem] relative overflow-hidden z-20 -mt-10">
-        
         <div class="container mx-auto px-6 text-center relative z-10">
             <h2 class="text-3xl md:text-5xl font-black mb-8 tracking-tight">WAKTUNYA SANTAI.</h2>
             <p class="text-slate-400 mb-12 max-w-xl mx-auto text-lg">Biarkan kami yang menangani tumpukan pakaian kotor Anda.</p>
@@ -412,7 +403,7 @@
                     Chat WhatsApp
                 </a>
                  <a href="#" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl hover:bg-white hover:text-slate-900 transition hover-trigger border border-white/20"><i class="fa-brands fa-instagram"></i></a>
-                <a href="https://maps.app.goo.gl/sh4iEWgRk6ztxSyX8" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl hover:bg-white hover:text-slate-900 transition hover-trigger border border-white/20"><i class="fa-solid fa-map-location-dot"></i></a>
+                <a href="#" class="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center text-2xl hover:bg-white hover:text-slate-900 transition hover-trigger border border-white/20"><i class="fa-solid fa-map-location-dot"></i></a>
             </div>
 
             <div class="border-t border-white/10 pt-8">
@@ -421,44 +412,102 @@
         </div>
     </footer>
 
+    <div id="pricingModal" class="fixed inset-0 z-[100] hidden opacity-0 transition-opacity duration-300" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity" onclick="toggleModal(false)"></div>
+    
+        <div class="fixed inset-0 z-10 overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                
+                <div id="modalPanel" class="relative transform overflow-hidden rounded-[2rem] bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-lg scale-95 opacity-0 duration-300 border border-white/50">
+                    
+                    <div class="bg-brand text-white px-6 py-4 flex justify-between items-center relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="text-xl font-black tracking-wide" id="modal-title">DAFTAR HARGA SATUAN</h3>
+                            <p class="text-brand-dark text-xs font-medium bg-white/20 inline-block px-2 py-1 rounded-lg mt-1">Estimasi pengerjaan 2-3 hari</p>
+                        </div>
+                        <div class="absolute -right-6 -top-10 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
+                        
+                        <button type="button" onclick="toggleModal(false)" class="relative z-10 bg-white/20 hover:bg-white hover:text-brand-dark rounded-full w-8 h-8 flex items-center justify-center transition-colors">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="px-6 py-6 max-h-[60vh] overflow-y-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr>
+                                    <th class="text-xs uppercase text-slate-400 font-bold pb-3 border-b border-slate-100">Item</th>
+                                    <th class="text-xs uppercase text-slate-400 font-bold pb-3 border-b border-slate-100 text-right">Harga</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm font-medium text-slate-700">
+                                
+                                @forelse($packages as $item)
+                                    <tr class="group hover:bg-slate-50 transition-colors">
+                                        <td class="py-3 border-b border-slate-50 group-hover:text-brand-dark">
+                                            {{ $item->nama }}
+                                            
+                                            @if($item->deskripsi)
+                                                <span class="block text-[10px] text-slate-400 font-normal">{{Str::limit($item->deskripsi, 30)}}</span>
+                                            @endif
+                                        </td>
+                                        
+                                        <td class="py-3 border-b border-slate-50 text-right font-bold">
+                                            @if($item->harga >= 1000)
+                                                {{ number_format($item->harga / 1000, 0) }}k
+                                            @else
+                                                {{ number_format($item->harga, 0, ',', '.') }}
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="2" class="py-8 text-center text-slate-400">
+                                            <i class="fa-regular fa-folder-open text-2xl mb-2"></i>
+                                            <p>Belum ada data harga.</p>
+                                        </td>
+                                    </tr>
+                                @endforelse
+
+                            </tbody>
+                        </table>
+                    </div>
+    
+                    <div class="bg-slate-50 px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <p class="text-xs text-slate-400 text-center sm:text-left">Harga bisa berubah tergantung tingkat noda.</p>
+                        <a href="https://wa.me/6282344005550" class="w-full sm:w-auto bg-brand-dark text-white px-6 py-2 rounded-full text-sm font-bold shadow-lg shadow-brand/20 hover:scale-105 transition text-center">
+                            Konsultasi WA
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({ once: true, duration: 800, offset: 100 });
 
-        // --- NEW: Logic Bubble Cursor ---
+        // --- Logic Bubble Cursor ---
         let lastBubbleTime = 0;
-        
-        // Event listener saat mouse bergerak
         document.addEventListener('mousemove', (e) => {
             const now = Date.now();
-            // Throttle: Batasi pembuatan gelembung setiap 50ms supaya ringan
             if (now - lastBubbleTime > 50) {
                 createBubble(e.clientX, e.clientY);
                 lastBubbleTime = now;
             }
         });
 
-        // Fungsi membuat elemen gelembung
         function createBubble(x, y) {
             const bubble = document.createElement('div');
             bubble.classList.add('soap-bubble');
-            
-            // Random ukuran gelembung (variasi 8px - 20px)
             const size = Math.random() * 12 + 8; 
             bubble.style.width = `${size}px`;
             bubble.style.height = `${size}px`;
-            
-            // Posisi di mouse
             bubble.style.left = `${x}px`;
             bubble.style.top = `${y}px`;
-            
-            // Masukkan ke body
             document.body.appendChild(bubble);
-
-            // Hapus elemen setelah animasi selesai (1 detik) untuk hemat memori
-            setTimeout(() => {
-                bubble.remove();
-            }, 1000);
+            setTimeout(() => { bubble.remove(); }, 1000);
         }
 
         // --- Navbar Scroll Logic ---
@@ -476,6 +525,90 @@
         function scrollToServices() {
             document.getElementById('services').scrollIntoView({ behavior: 'smooth' });
         }
+
+        // --- PRICING MODAL LOGIC (NEW) ---
+        function toggleModal(show) {
+            const modal = document.getElementById('pricingModal');
+            const panel = document.getElementById('modalPanel');
+            
+            if (show) {
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    panel.classList.remove('scale-95', 'opacity-0');
+                    panel.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                document.body.style.overflow = 'hidden'; // Lock Scroll
+            } else {
+                modal.classList.add('opacity-0');
+                panel.classList.remove('scale-100', 'opacity-100');
+                panel.classList.add('scale-95', 'opacity-0');
+                
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    document.body.style.overflow = ''; // Unlock Scroll
+                }, 300);
+            }
+        }
+
+        // Close Modal with Escape Key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                toggleModal(false);
+            }
+        });
+
+        // --- WHATSAPP ORDER LOGIC ---
+    function pesanWa(paket, harga) {
+        // Ganti nomor ini dengan nomor WA Admin (format 628...)
+        const nomorHP = "6282344005550"; 
+        
+        // Template pesan
+        // %0A adalah kode untuk baris baru (Enter)
+        let pesan = `Halo FreshClean! 👋%0A%0ASaya mau pesan paket: *${paket}* (${harga}).%0A%0AMohon info penjemputan atau lokasi outlet. Terima kasih.`;
+        
+        // Buka WhatsApp
+        window.open(`https://wa.me/${nomorHP}?text=${pesan}`, '_blank');
+    }
+
+    // --- MOBILE MENU LOGIC ---
+    const menuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = menuBtn.querySelector('i');
+    let isMenuOpen = false;
+
+    // Fungsi Buka/Tutup Menu
+    function toggleMobileMenu() {
+        isMenuOpen = !isMenuOpen;
+        
+        if (isMenuOpen) {
+            // Buka Menu
+            mobileMenu.classList.remove('scale-y-0', 'opacity-0');
+            mobileMenu.classList.add('scale-y-100', 'opacity-100');
+            
+            // Ubah Ikon jadi X
+            menuIcon.classList.remove('fa-bars');
+            menuIcon.classList.add('fa-xmark', 'rotate-90');
+        } else {
+            // Tutup Menu
+            mobileMenu.classList.remove('scale-y-100', 'opacity-100');
+            mobileMenu.classList.add('scale-y-0', 'opacity-0');
+            
+            // Ubah Ikon jadi Garis lagi
+            menuIcon.classList.remove('fa-xmark', 'rotate-90');
+            menuIcon.classList.add('fa-bars');
+        }
+    }
+
+    // Event Listener Klik Tombol
+    menuBtn.addEventListener('click', toggleMobileMenu);
+
+    // Tutup menu jika klik di luar area
+    document.addEventListener('click', (e) => {
+        if (isMenuOpen && !menuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+            toggleMobileMenu();
+        }
+    });
     </script>
 </body>
 </html>
